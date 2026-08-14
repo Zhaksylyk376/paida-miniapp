@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "在线下单",
+  "usingComponents": {
+    "lang-switch": "/components/lang-switch/lang-switch"
+  }
+}

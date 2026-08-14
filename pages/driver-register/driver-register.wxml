@@ -1,0 +1,45 @@
+<view class="container">
+
+  <view class="card">
+    <view class="title">{{t.d_reg_title}}</view>
+    <view class="subtitle">{{t.d_reg_subtitle}}</view>
+
+    <view class="form-item">
+      <view class="label">{{t.d_reg_fullname}} *</view>
+      <input class="form-input" placeholder="{{t.d_reg_fullname_ph}}" value="{{form.fullname}}" bindinput="onInput" data-field="fullname" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">{{t.d_reg_phone}} *</view>
+      <input class="form-input" type="number" placeholder="{{t.d_reg_phone_ph}}" value="{{form.phone}}" bindinput="onInput" data-field="phone" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">{{t.d_reg_wechat}}</view>
+      <input class="form-input" placeholder="{{t.d_reg_wechat_ph}}" value="{{form.wechat}}" bindinput="onInput" data-field="wechat" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">{{t.d_reg_truck}} *</view>
+      <input class="form-input" placeholder="{{t.d_reg_truck_ph}}" value="{{form.truck}}" bindinput="onInput" data-field="truck" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">{{t.d_reg_plate}} *</view>
+      <input class="form-input" placeholder="{{t.d_reg_plate_ph}}" value="{{form.plate}}" bindinput="onInput" data-field="plate" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">{{t.d_reg_license}}</view>
+      <input class="form-input" placeholder="{{t.d_reg_license_ph}}" value="{{form.license}}" bindinput="onInput" data-field="license" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">{{t.d_reg_route}}</view>
+      <input class="form-input" placeholder="{{t.d_reg_route_ph}}" value="{{form.route}}" bindinput="onInput" data-field="route" />
+    </view>
+
+    <button class="btn-primary" bindtap="submit" loading="{{loading}}">{{t.d_reg_submit}}</button>
+  </view>
+
+</view>

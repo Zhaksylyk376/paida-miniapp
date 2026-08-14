@@ -1,0 +1,138 @@
+<view class="container">
+
+  <view class="page-topbar">
+    <lang-switch bindchange="onLangChanged" />
+  </view>
+
+  <!-- ============ CLIENT MODE ============ -->
+  <block wx:if="{{role === 'client'}}">
+
+    <!-- HERO -->
+    <view class="hero">
+      <view class="hero-brand">Paida</view>
+      <view class="hero-title">{{t.hero_title}}</view>
+      <view class="hero-subtitle">{{t.hero_subtitle}}</view>
+      <view class="hero-actions">
+        <button class="btn-primary hero-btn" bindtap="goToOrder">{{t.hero_btn_calc}}</button>
+        <button class="btn-secondary hero-btn" bindtap="goToProcess">{{t.hero_btn_how}}</button>
+      </view>
+    </view>
+
+    <!-- STATS -->
+    <view class="stats-strip">
+      <view class="stats-item">
+        <view class="stats-val">{{t.stats_countries_val}}</view>
+        <view class="stats-label">{{t.stats_countries}}</view>
+      </view>
+      <view class="stats-divider"></view>
+      <view class="stats-item">
+        <view class="stats-val">{{t.stats_days_min_val}}</view>
+        <view class="stats-label">{{t.stats_days_min}}</view>
+      </view>
+      <view class="stats-divider"></view>
+      <view class="stats-item">
+        <view class="stats-val">{{t.stats_own_val}}</view>
+        <view class="stats-label">{{t.stats_own}}</view>
+      </view>
+    </view>
+
+    <!-- HOW IT WORKS -->
+    <view class="section">
+      <view class="section-title">{{t.how_title}}</view>
+      <view class="section-subtitle">{{t.how_subtitle}}</view>
+      <view class="how-grid">
+        <view class="how-step" wx:for="{{howSteps}}" wx:key="id">
+          <view class="how-step-num">{{item.num}}</view>
+          <view class="how-step-body">
+            <view class="how-step-title">{{item.title}}</view>
+            <view class="how-step-desc">{{item.desc}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- CLIENTS -->
+    <view class="section">
+      <view class="section-title">{{t.clients_title}}</view>
+      <view class="clients">
+        <view class="client-item" wx:for="{{clients}}" wx:key="id" bindtap="goToOrder">
+          <view class="client-icon">{{item.icon}}</view>
+          <view class="client-content">
+            <view class="client-name">{{item.name}}</view>
+            <view class="client-desc">{{item.desc}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ADVANTAGES -->
+    <view class="section">
+      <view class="section-title">{{t.advantages_title}}</view>
+      <view class="advantages">
+        <view class="adv-item" wx:for="{{advantages}}" wx:key="id">
+          <view class="adv-num">{{item.num}}</view>
+          <view class="adv-content">
+            <view class="adv-title">{{item.title}}</view>
+            <view class="adv-desc">{{item.desc}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="footer">{{t.footer_note}}</view>
+  </block>
+
+  <!-- ============ DRIVER MODE ============ -->
+  <block wx:else>
+    <view class="hero driver-hero">
+      <view class="hero-brand">Paida</view>
+      <view class="driver-badge">🚚</view>
+      <view class="hero-title">{{t.d_home_welcome}}{{profile ? ', ' + profile.fullname : ''}}</view>
+      <view wx:if="{{profile}}" class="hero-subtitle mono">{{profile.plate}} · {{profile.truck}}</view>
+    </view>
+
+    <block wx:if="{{!profile}}">
+      <view class="card cta-registration">
+        <view class="cta-icon">📝</view>
+        <view class="cta-title">{{t.d_home_notregistered_title}}</view>
+        <view class="cta-desc">{{t.d_home_notregistered_desc}}</view>
+        <button class="btn-primary" bindtap="goToRegister">{{t.d_home_register}}</button>
+      </view>
+    </block>
+
+    <block wx:elif="{{profile.status === 'pending'}}">
+      <view class="card status-pending">
+        <view class="cta-icon">⏳</view>
+        <view class="cta-title">{{t.d_home_pending_title}}</view>
+        <view class="cta-desc">{{t.d_home_pending_desc}}</view>
+      </view>
+      <view class="stats-grid">
+        <view class="stat-card"><view class="stat-num">{{stats.active}}</view><view class="stat-label">{{t.d_home_stats_active}}</view></view>
+        <view class="stat-card"><view class="stat-num">{{stats.done}}</view><view class="stat-label">{{t.d_home_stats_done}}</view></view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="stats-grid">
+        <view class="stat-card" bindtap="goToMyLoads">
+          <view class="stat-num">{{stats.active}}</view>
+          <view class="stat-label">{{t.d_home_stats_active}}</view>
+        </view>
+        <view class="stat-card" bindtap="goToMyLoads">
+          <view class="stat-num">{{stats.done}}</view>
+          <view class="stat-label">{{t.d_home_stats_done}}</view>
+        </view>
+      </view>
+
+      <view class="quick-actions">
+        <button class="btn-primary" bindtap="goToAddLoad">➕ {{t.d_home_quick_add}}</button>
+        <button class="btn-secondary" bindtap="goToMyLoads">📋 {{t.d_home_quick_view}}</button>
+      </view>
+
+      <view class="hint">{{t.d_home_approved_hint}}</view>
+    </block>
+
+    <view class="footer">{{t.footer_note}}</view>
+  </block>
+
+</view>

@@ -1,0 +1,32 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/tracking/tracking",
+    "pages/order/order",
+    "pages/about/about",
+    "pages/driver-register/driver-register",
+    "pages/contract/contract"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1a56db",
+    "navigationBarTitleText": "Paida",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f7fa"
+  },
+  "tabBar": {
+    "color": "#8a8a8a",
+    "selectedColor": "#1a56db",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/index/index",       "text": "首页" },
+      { "pagePath": "pages/tracking/tracking", "text": "追踪" },
+      { "pagePath": "pages/order/order",       "text": "下单" },
+      { "pagePath": "pages/about/about",       "text": "关于" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,14 @@
+# WeChat DevTools private files
+project.private.config.json
+
+# System
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Node (если добавим бэкенд)
+node_modules/
+npm-debug.log

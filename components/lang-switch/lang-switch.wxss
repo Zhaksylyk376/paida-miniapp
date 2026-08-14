@@ -1,0 +1,23 @@
+.lang-pill {
+  display: inline-flex;
+  background: #fff;
+  border-radius: 100rpx;
+  padding: 4rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+
+.lang-opt {
+  padding: 10rpx 24rpx;
+  font-size: 24rpx;
+  color: #666;
+  border-radius: 100rpx;
+  min-width: 40rpx;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.lang-opt.active {
+  background: #1a56db;
+  color: #fff;
+  font-weight: 600;
+}

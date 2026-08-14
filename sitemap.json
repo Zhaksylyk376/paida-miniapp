@@ -1,0 +1,9 @@
+{
+  "desc": "Настройки индексации для поиска внутри WeChat. См. https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/sitemap.html",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+<view class="container">
+
+  <view class="page-topbar">
+    <lang-switch bindchange="onLangChanged" />
+  </view>
+
+  <!-- ============ CLIENT: PROCESS EXPLANATION ============ -->
+  <block wx:if="{{role === 'client'}}">
+    <view class="card">
+      <view class="title">{{t.process_title}}</view>
+      <view class="subtitle">{{t.process_subtitle}}</view>
+    </view>
+
+    <view class="process-timeline">
+      <view class="process-item" wx:for="{{steps}}" wx:key="id">
+        <view class="process-dot">
+          <text class="process-dot-num">{{item.num}}</text>
+        </view>
+        <view class="process-content">
+          <view class="process-title">{{item.title}}</view>
+          <view class="process-desc">{{item.desc}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="process-note">{{t.process_note}}</view>
+  </block>
+
+  <!-- ============ DRIVER: ADD LOAD ============ -->
+  <block wx:else>
+    <view class="card">
+      <view class="title">{{t.add_load_title}}</view>
+      <view class="subtitle">{{t.add_load_subtitle}}</view>
+
+      <view class="form-item">
+        <view class="label">{{t.add_load_number}}</view>
+        <input class="form-input" placeholder="{{t.add_load_number_ph}}" value="{{load.number}}" bindinput="onLoadInput" data-field="number" />
+      </view>
+
+      <view class="form-item">
+        <view class="label">{{t.add_load_route}}</view>
+        <input class="form-input" placeholder="{{t.add_load_route_ph}}" value="{{load.route}}" bindinput="onLoadInput" data-field="route" />
+      </view>
+
+      <view class="form-item">
+        <view class="label">{{t.add_load_client}}</view>
+        <input class="form-input" placeholder="{{t.add_load_client_ph}}" value="{{load.client}}" bindinput="onLoadInput" data-field="client" />
+      </view>
+
+      <view class="form-item">
+        <view class="label">{{t.add_load_client_wechat}}</view>
+        <input class="form-input" placeholder="{{t.add_load_client_wechat_ph}}" value="{{load.clientWechat}}" bindinput="onLoadInput" data-field="clientWechat" />
+      </view>
+
+      <view class="form-item">
+        <view class="label">{{t.add_load_price}}</view>
+        <input class="form-input" type="number" placeholder="0" value="{{load.price}}" bindinput="onLoadInput" data-field="price" />
+      </view>
+
+      <view class="form-item">
+        <view class="label">{{t.add_load_note}}</view>
+        <textarea class="form-textarea" placeholder="{{t.add_load_note_ph}}" value="{{load.note}}" bindinput="onLoadInput" data-field="note" />
+      </view>
+
+      <button class="btn-primary" bindtap="addLoad">{{t.add_load_submit}}</button>
+    </view>
+  </block>
+
+</view>

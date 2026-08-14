@@ -1,0 +1,4 @@
+<view class="lang-pill">
+  <view class="lang-opt {{lang === 'zh' ? 'active' : ''}}" bindtap="pick" data-lang="zh">中</view>
+  <view class="lang-opt {{lang === 'ru' ? 'active' : ''}}" bindtap="pick" data-lang="ru">RU</view>
+</view>

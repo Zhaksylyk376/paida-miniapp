@@ -1,0 +1,105 @@
+<view class="container">
+
+  <block wx:if="{{load}}">
+    <!-- Contract header -->
+    <view class="contract-header">
+      <view class="contract-brand">Paida</view>
+      <view class="contract-title">{{t.contract_title}}</view>
+      <view class="contract-meta">{{t.contract_generated}}: {{createdDate}}</view>
+    </view>
+
+    <!-- Load info -->
+    <view class="card">
+      <view class="row-between">
+        <view>
+          <view class="mini-label">{{t.contract_number}}</view>
+          <view class="mono big">{{load.number}}</view>
+        </view>
+        <view class="status-badge status-{{load.status}}">{{statusLabel}}</view>
+      </view>
+      <view class="divider"></view>
+      <view class="mini-label">{{t.contract_route}}</view>
+      <view class="value">{{load.route}}</view>
+    </view>
+
+    <!-- Client section -->
+    <view class="card">
+      <view class="section-h">👤 {{t.contract_client_section}}</view>
+      <view class="info-row" wx:if="{{load.client}}">
+        <text class="info-label">{{t.d_reg_fullname}}</text>
+        <text class="info-value">{{load.client}}</text>
+      </view>
+      <view class="info-row" wx:if="{{load.clientWechat}}">
+        <text class="info-label">WeChat</text>
+        <text class="info-value mono">{{load.clientWechat}}</text>
+      </view>
+
+      <view class="action-row">
+        <button
+          class="action-btn primary"
+          bindtap="callClient"
+          disabled="{{!clientPhone}}"
+        >{{t.contract_call}}</button>
+        <button
+          class="action-btn"
+          bindtap="copyWechat"
+          disabled="{{!load.clientWechat}}"
+        >{{t.contract_wechat}}</button>
+      </view>
+
+      <view class="hint-small" wx:if="{{!clientPhone}}">{{t.contract_no_client_phone}}</view>
+      <view class="hint-small" wx:if="{{!load.clientWechat}}">{{t.contract_no_client_wechat}}</view>
+    </view>
+
+    <!-- Driver section -->
+    <view class="card">
+      <view class="section-h">🚚 {{t.contract_driver_section}}</view>
+      <block wx:if="{{driver}}">
+        <view class="info-row"><text class="info-label">{{t.d_reg_fullname}}</text><text class="info-value">{{driver.fullname}}</text></view>
+        <view class="info-row"><text class="info-label">{{t.d_reg_phone}}</text><text class="info-value mono">{{driver.phone}}</text></view>
+        <view class="info-row"><text class="info-label">{{t.d_reg_truck}}</text><text class="info-value">{{driver.truck}}</text></view>
+        <view class="info-row"><text class="info-label">{{t.d_reg_plate}}</text><text class="info-value mono">{{driver.plate}}</text></view>
+      </block>
+    </view>
+
+    <!-- Cargo / price -->
+    <view class="card" wx:if="{{load.note || load.price}}">
+      <view class="section-h">📦 {{t.contract_cargo_section}}</view>
+      <view class="info-row" wx:if="{{load.price}}">
+        <text class="info-label">{{t.contract_price}}</text>
+        <text class="info-value big">¥ {{load.price}}</text>
+      </view>
+      <view class="note-block" wx:if="{{load.note}}">{{load.note}}</view>
+    </view>
+
+    <!-- Status history -->
+    <view class="card">
+      <view class="section-h">📅 {{t.contract_status_section}}</view>
+      <view class="timeline">
+        <view class="tl-item" wx:for="{{historyLabeled}}" wx:key="at">
+          <view class="tl-dot {{index === 0 ? 'active' : ''}}"></view>
+          <view class="tl-body">
+            <view class="tl-status">{{item.label}}</view>
+            <view class="tl-time">{{item.timeStr}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Next status actions -->
+    <view class="card" wx:if="{{nextStatuses.length > 0}}">
+      <view class="section-h">⚡️ {{t.contract_next_status}}</view>
+      <view class="next-actions">
+        <button
+          wx:for="{{nextStatuses}}"
+          wx:for-item="ns"
+          wx:key="value"
+          class="btn-primary next-btn"
+          bindtap="advance"
+          data-status="{{ns.value}}"
+        >{{ns.emoji}} {{ns.label}}</button>
+      </view>
+    </view>
+  </block>
+
+</view>

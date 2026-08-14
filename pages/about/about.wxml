@@ -1,0 +1,58 @@
+<view class="container">
+
+  <view class="hero-mini">
+    <view class="hero-brand">Paida</view>
+    <view class="hero-mini-tag">{{lang === 'ru' ? 'Автогрузы Китай → СНГ' : '中国 → 独联体 卡车专线'}}</view>
+  </view>
+
+  <!-- Language switcher -->
+  <view class="switcher">
+    <view class="switcher-label">{{t.about_lang}}</view>
+    <view class="switcher-tabs">
+      <view class="switcher-tab {{lang === 'zh' ? 'active' : ''}}" bindtap="switchLang" data-lang="zh">{{t.about_lang_zh}}</view>
+      <view class="switcher-tab {{lang === 'ru' ? 'active' : ''}}" bindtap="switchLang" data-lang="ru">{{t.about_lang_ru}}</view>
+    </view>
+  </view>
+
+  <!-- Role switcher -->
+  <view class="switcher">
+    <view class="switcher-label">{{t.role_switch}}</view>
+    <view class="switcher-tabs">
+      <view class="switcher-tab {{role === 'client' ? 'active' : ''}}" bindtap="switchRole" data-role="client">{{t.role_client}}</view>
+      <view class="switcher-tab {{role === 'driver' ? 'active' : ''}}" bindtap="switchRole" data-role="driver">{{t.role_driver}}</view>
+    </view>
+  </view>
+
+  <!-- ============ DRIVER PROFILE ============ -->
+  <block wx:if="{{role === 'driver' && profile}}">
+    <view class="card">
+      <view class="title">{{t.d_profile_title}}</view>
+
+      <view class="profile-row"><text class="pr-label">{{t.d_reg_fullname}}</text><text class="pr-value">{{profile.fullname}}</text></view>
+      <view class="profile-row"><text class="pr-label">{{t.d_reg_phone}}</text><text class="pr-value mono">{{profile.phone}}</text></view>
+      <view class="profile-row" wx:if="{{profile.wechat}}"><text class="pr-label">{{t.d_reg_wechat}}</text><text class="pr-value mono">{{profile.wechat}}</text></view>
+      <view class="profile-row"><text class="pr-label">{{t.d_reg_truck}}</text><text class="pr-value">{{profile.truck}}</text></view>
+      <view class="profile-row"><text class="pr-label">{{t.d_reg_plate}}</text><text class="pr-value mono">{{profile.plate}}</text></view>
+      <view class="profile-row" wx:if="{{profile.license}}"><text class="pr-label">{{t.d_reg_license}}</text><text class="pr-value">{{profile.license}}</text></view>
+      <view class="profile-row" wx:if="{{profile.route}}"><text class="pr-label">{{t.d_reg_route}}</text><text class="pr-value">{{profile.route}}</text></view>
+
+      <view class="profile-status status-{{profile.status || 'pending'}}">
+        <block wx:if="{{profile.status === 'pending'}}">⏳ {{t.d_home_pending_title}}</block>
+        <block wx:else>✅ Approved</block>
+      </view>
+
+      <button class="btn-secondary" bindtap="editProfile">{{t.d_profile_edit}}</button>
+    </view>
+  </block>
+
+  <!-- ============ ABOUT PAIDA ============ -->
+  <block wx:if="{{role === 'client'}}">
+    <view class="card">
+      <view class="title">{{t.about_title}}</view>
+      <view class="text">{{t.about_text}}</view>
+    </view>
+  </block>
+
+  <view class="footer">© 2026 Paida</view>
+
+</view>
