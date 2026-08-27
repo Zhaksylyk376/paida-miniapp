@@ -1,5 +1,9 @@
 <view class="container">
 
+  <view wx:if="{{demoMode}}" class="demo-banner">
+    {{t.demo_banner}}
+  </view>
+
   <view class="page-topbar">
     <lang-switch bindchange="onLangChanged" />
   </view>

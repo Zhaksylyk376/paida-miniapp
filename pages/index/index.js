@@ -11,7 +11,8 @@ Page({
     advantages: [],
     howSteps: [],
     isAdmin: false,
-    pendingBadge: 0
+    pendingBadge: 0,
+    demoMode: false
   },
 
   async onShow() {
@@ -28,6 +29,7 @@ Page({
 
     this.setData({
       t, role, isAdmin,
+      demoMode: !!app.globalData.demoMode,
       howSteps: [
         { id: 1, num: '1', title: t.how_1_title, desc: t.how_1_desc },
         { id: 2, num: '2', title: t.how_2_title, desc: t.how_2_desc },

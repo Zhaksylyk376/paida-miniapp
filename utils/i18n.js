@@ -600,6 +600,9 @@ Object.assign(dict.zh, {
   admin_check_ok: '通过',
   admin_open_admin: '审核台',
 
+  // Демо-режим
+  demo_banner: '演示模式 · 云开发未配置，服务器功能不可用',
+
   // Стандартные оговорки
   contract_section_clauses: '标准条款',
   contract_clause_downtime_title: '车辆滞留',
@@ -719,6 +722,9 @@ Object.assign(dict.ru, {
   admin_checks: 'Автопроверки',
   admin_check_ok: 'пройдено',
   admin_open_admin: 'Панель проверки',
+
+  // Демо-режим
+  demo_banner: 'Демо-режим · облако не подключено, серверные функции недоступны',
 
   // Стандартные оговорки
   contract_section_clauses: 'Стандартные оговорки',

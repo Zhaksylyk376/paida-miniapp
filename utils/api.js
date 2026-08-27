@@ -1,10 +1,38 @@
 // ============================================================
 //  API — тонкая обёртка над облачной функцией «paida».
-//  Все обращения к серверу идут отсюда. Возвращает Promise с data
-//  или бросает ошибку { code, msg } — её удобно ловить в try/catch.
+//
+//  Демо-режим: если облако не настроено (cloudEnv не заполнен),
+//  api не бьётся об сервер, а возвращает разумные пустые дефолты.
+//  Это позволяет запускать UI на test-AppID без облачных прав.
 // ============================================================
 
+let _demo = false
+
+// Дефолтные значения на каждый action в демо-режиме
+const DEMO_DEFAULTS = {
+  whoami:            { openid: 'demo', isAdmin: false },
+  login:             { openid: 'demo', isAdmin: false, role: 'client', driverStatus: null, kycStatus: null },
+  driverGet:         null,
+  clientKycGet:      null,
+  myOrders:          [],
+  myLoads:           [],
+  availableOrders:   [],
+  orderApplications: { order: null, applications: [] },
+  adminDrivers:      [],
+  orderGet:          { order: null, driver: null }
+}
+
+function _demoResult(action) {
+  return DEMO_DEFAULTS.hasOwnProperty(action) ? DEMO_DEFAULTS[action] : null
+}
+
 function call(action, payload) {
+  if (_demo) {
+    // В демо-режиме мутирующие действия отклоняем, чтобы UI показал toast
+    const readOnly = DEMO_DEFAULTS.hasOwnProperty(action)
+    if (readOnly) return Promise.resolve(_demoResult(action))
+    return Promise.reject({ code: 'DEMO', msg: 'Демо-режим · сервер не подключён' })
+  }
   return new Promise((resolve, reject) => {
     wx.cloud.callFunction({
       name: 'paida',
@@ -23,8 +51,10 @@ function call(action, payload) {
 }
 
 // Загрузка файла (документа/фото) в облачное хранилище.
-// Возвращает fileID, который потом сохраняем в анкете.
 function uploadFile(tempFilePath, folder) {
+  if (_demo) {
+    return Promise.reject({ code: 'DEMO', msg: 'Демо-режим · загрузка файлов недоступна' })
+  }
   const ext = (tempFilePath.match(/\.\w+$/) || ['.jpg'])[0]
   const rand = Math.floor(Math.random() * 1e9)
   const cloudPath = `${folder}/${Date.now()}_${rand}${ext}`
@@ -44,6 +74,8 @@ function uploadFile(tempFilePath, folder) {
 module.exports = {
   call,
   uploadFile,
+  _setDemo: (v) => { _demo = !!v },
+  isDemo:   () => _demo,
 
   // Сессия / роль
   whoami:      ()               => call('whoami'),

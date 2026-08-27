@@ -3,6 +3,19 @@
  *  градиентов, крупная типографика, много воздуха.
  * ================================================================ */
 
+/* ============ DEMO BANNER ============ */
+.demo-banner {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1rpx solid #fcd34d;
+  border-radius: var(--r-sm);
+  padding: 14rpx 18rpx;
+  font-size: 22rpx;
+  line-height: 1.4;
+  margin-bottom: 16rpx;
+  text-align: center;
+}
+
 /* ============ HERO ============ */
 .hero {
   background: var(--color-ink);
