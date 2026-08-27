@@ -6,11 +6,16 @@
 // ============================================================
 
 const cloud = require('wx-server-sdk')
+const crypto = require('crypto')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const db = cloud.database()
 const _ = db.command
 const $ = db.command.aggregate
+
+// Версия текста договора: при изменении оговорок/арбитража поднимаем — старые
+// подписи остаются валидными для той версии, новые фиксируются как v2 и т.д.
+const CONTRACT_VERSION = 'paida-v1-2026-08'
 
 // Коллекции
 const Users    = db.collection('users')     // профиль + роль
@@ -66,6 +71,10 @@ exports.main = async (event, context) => {
       case 'driverGet':         return await driverGet(openid)
       case 'driverRegister':    return await driverRegister(openid, event)
 
+      // KYC клиента (身份证/营业执照/ИИН/БИН)
+      case 'clientKycGet':      return await clientKycGet(openid)
+      case 'clientKycSubmit':   return await clientKycSubmit(openid, event)
+
       // Заказы (клиент)
       case 'orderCreate':       return await orderCreate(openid, event)
       case 'myOrders':          return await myOrders(openid)
@@ -98,6 +107,90 @@ exports.main = async (event, context) => {
 }
 
 // ============================================================
+//  KYC клиента — верификация 身份证 / 营业执照 (КНР) или ИИН / БИН (КЗ)
+//  Требуется по концепции клиента: для юридической силы электронного договора
+//  каждая сторона должна быть идентифицирована. Хранится в users.kyc.
+// ============================================================
+
+// Форматы ID:
+//   cn.physical — 身份证: 18 знаков, последний может быть X
+//   cn.legal    — 营业执照 (USCC): 18 буквенно-цифровых знаков
+//   kz.physical — ИИН: 12 цифр
+//   kz.legal    — БИН: 12 цифр (структурно как ИИН)
+const ID_RE = {
+  'cn.physical': /^\d{17}[\dXx]$/,
+  'cn.legal':    /^[0-9A-Za-z]{18}$/,
+  'kz.physical': /^\d{12}$/,
+  'kz.legal':    /^\d{12}$/
+}
+
+function normId(s) {
+  return String(s || '').toUpperCase().replace(/\s+/g, '')
+}
+
+async function clientKycGet(openid) {
+  const u = await Users.where({ _openid: openid }).get()
+  const user = u.data[0]
+  return ok(user && user.kyc ? user.kyc : null)
+}
+
+async function clientKycSubmit(openid, event) {
+  const form = event.form || {}
+  const docFileID = event.docFileID || ''
+
+  const type    = form.type    // 'physical' | 'legal'
+  const country = form.country // 'cn' | 'kz'
+  const key = `${country}.${type}`
+  const re = ID_RE[key]
+  if (!re) return fail('VALIDATION', 'Неверная страна или тип')
+
+  const idNumber = normId(form.idNumber)
+  if (!re.test(idNumber)) return fail('BAD_ID', 'Формат идентификатора не совпадает с выбранным типом')
+
+  const name = String(form.name || '').trim()
+  if (name.length < 2) return fail('BAD_NAME', 'Укажите ФИО или наименование')
+
+  if (!docFileID) return fail('DOC_REQUIRED', 'Загрузите фото документа')
+
+  // Антифрод: один и тот же документ не может числиться за разными openid
+  const dup = await Users.where({
+    'kyc.idNumberKey': key + ':' + idNumber,
+    _openid: _.neq(openid)
+  }).count()
+  if (dup.total > 0) return fail('DUP_ID', 'Этот идентификатор уже зарегистрирован другим пользователем')
+
+  const kyc = {
+    type, country,
+    name,
+    idNumber,
+    idNumberKey: key + ':' + idNumber, // индекс для антифрода
+    docFileID,
+    status: 'submitted', // MVP: submitted достаточно для подписи, admin верификация — отдельным флоу
+    submittedAt: now(),
+    reviewedAt: null,
+    reviewedBy: null,
+    rejectReason: ''
+  }
+
+  const u = await Users.where({ _openid: openid }).get()
+  if (u.data.length) {
+    await Users.doc(u.data[0]._id).update({ data: { kyc } })
+  } else {
+    await Users.add({ data: { _openid: openid, role: 'client', createdAt: now(), kyc } })
+  }
+  return ok(kyc)
+}
+
+async function requireClientKyc(openid) {
+  const u = await Users.where({ _openid: openid }).get()
+  const user = u.data[0]
+  if (!user || !user.kyc || !user.kyc.status) return { ok: false }
+  // MVP: любой submitted/approved пропускает; rejected блокирует
+  if (user.kyc.status === 'rejected') return { ok: false, rejected: true, reason: user.kyc.rejectReason }
+  return { ok: true, kyc: user.kyc }
+}
+
+// ============================================================
 //  LOGIN — гарантируем документ пользователя и возвращаем его состояние
 // ============================================================
 async function login(openid, event) {
@@ -123,7 +216,8 @@ async function login(openid, event) {
     openid,
     isAdmin: isAdmin(openid),
     role: user.role || 'client',
-    driverStatus: driver ? driver.status : null // null | pending | approved | rejected
+    driverStatus: driver ? driver.status : null, // null | pending | approved | rejected
+    kycStatus: (user.kyc && user.kyc.status) || null // null | submitted | approved | rejected
   })
 }
 
@@ -421,23 +515,119 @@ async function orderChoose(openid, event) {
 
 // ============================================================
 //  ДОГОВОР: подпись (accept) клиента или водителя
+//  Каждая подпись фиксируется как криптографическая метка:
+//    - snapshot: детерминированный JSON неизменяемых полей договора
+//    - hash: SHA-256 от snapshot + версия текста + сторона + серверное время
+//    - openid стороны + серверный timestamp (клиент подделать не может)
+//  Это база под будущую интеграцию с 法大大 / НУЦ РК —
+//  цепочка хэшей уже соответствует требованиям электронной подписи.
 // ============================================================
+function contractSnapshot(order, driver, clientKyc) {
+  // Детерминированный порядок ключей — важно для стабильности хэша
+  const snap = {
+    version: CONTRACT_VERSION,
+    orderId: order._id,
+    number: order.number,
+    createdAt: order.createdAt,
+    parties: {
+      client: {
+        openid: order._openid,
+        name: order.name || '',
+        phone: order.phone || '',
+        // KYC-идентификатор входит в хэш — подмена личности изменит подпись
+        kyc: clientKyc ? {
+          type: clientKyc.type, country: clientKyc.country,
+          idNumber: clientKyc.idNumber, name: clientKyc.name
+        } : null
+      },
+      driver: driver ? {
+        openid: order.driverId,
+        fullname: driver.fullname || '',
+        phone: driver.phone || '',
+        truck: driver.truck || '',
+        plate: driver.plate || ''
+      } : null
+    },
+    subject: {
+      fromCity: order.fromCity || '',
+      countryCode: order.countryCode || '',
+      countryName: order.countryName || '',
+      toCity: order.toCity || '',
+      goodsType: order.goodsType || '',
+      weight: order.weight || '',
+      volume: order.volume || ''
+    },
+    price: order.price || null,
+    note: order.note || ''
+  }
+  return JSON.stringify(snap)
+}
+
+function sha256(s) {
+  return crypto.createHash('sha256').update(s).digest('hex')
+}
+
 async function contractAccept(openid, event) {
   const id = event.orderId
   const doc = await Orders.doc(id).get().catch(() => null)
   if (!doc || !doc.data) return fail('NOT_FOUND', 'Заказ не найден')
   const o = doc.data
 
-  const patch = {}
-  if (o._openid === openid) {
-    patch.clientAcceptedAt = now()
-  } else if (o.driverId === openid) {
-    patch.driverAcceptedAt = now()
+  let role
+  if (o._openid === openid) role = 'client'
+  else if (o.driverId === openid) role = 'driver'
+  else return fail('FORBIDDEN', 'Нет доступа к договору')
+
+  // Клиент обязан пройти KYC перед подписью — концепция клиента
+  let clientKyc = null
+  if (role === 'client') {
+    const gate = await requireClientKyc(openid)
+    if (!gate.ok) {
+      return fail(gate.rejected ? 'KYC_REJECTED' : 'KYC_REQUIRED',
+        gate.rejected ? ('KYC отклонён: ' + (gate.reason || '')) : 'Требуется верификация личности')
+    }
+    clientKyc = gate.kyc
   } else {
-    return fail('FORBIDDEN', 'Нет доступа к договору')
+    // При подписании водителем прикладываем KYC клиента к snapshot,
+    // если он уже проходил верификацию
+    const cu = await Users.where({ _openid: o._openid }).get()
+    clientKyc = (cu.data[0] && cu.data[0].kyc) || null
   }
+
+  // Получаем анкету водителя для snapshot (если назначен)
+  let driver = null
+  if (o.driverId) {
+    const drv = await Drivers.where({ _openid: o.driverId }).get()
+    driver = drv.data[0] || null
+  }
+
+  const at = now()
+  const snapshot = contractSnapshot(o, driver, clientKyc)
+  const snapshotHash = sha256(snapshot)
+  // Полный отпечаток подписи: снимок + версия + роль + время + openid.
+  // Изменение любого элемента → другой fingerprint.
+  const signaturePayload = [
+    CONTRACT_VERSION, snapshotHash, role, String(at), openid
+  ].join('|')
+  const fingerprint = sha256(signaturePayload)
+
+  const signature = {
+    role,
+    openid,
+    contractVersion: CONTRACT_VERSION,
+    snapshotHash,
+    fingerprint,
+    at
+  }
+
+  const patch = {
+    signatures: _.push([signature])
+  }
+  if (role === 'client') patch.clientAcceptedAt = at
+  else patch.driverAcceptedAt = at
+
   await Orders.doc(id).update({ data: patch })
-  return ok(patch)
+  return ok({ role, at, fingerprint, snapshotHash, contractVersion: CONTRACT_VERSION })
 }
 
 // ============================================================

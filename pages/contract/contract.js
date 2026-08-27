@@ -27,6 +27,9 @@ Page({
     driverAcceptedAt: 0,
     clientAcceptedStr: '',
     driverAcceptedStr: '',
+    clientFingerprint: '',
+    driverFingerprint: '',
+    contractVersion: '',
     canAdvance: false
   },
 
@@ -73,6 +76,13 @@ Page({
         }))
       : []
 
+    // Последние подписи каждой стороны (у заказа может накопиться история)
+    const sigs = Array.isArray(raw.signatures) ? raw.signatures : []
+    const lastSigOf = (role) => sigs.filter(s => s && s.role === role).pop() || null
+    const clientSig = lastSigOf('client')
+    const driverSig = lastSigOf('driver')
+    const fpShort = (fp) => (fp || '').slice(0, 16).toUpperCase()
+
     this.setData({
       t, load, driver, isClient,
       role: this.viewRole,
@@ -85,6 +95,9 @@ Page({
       driverAcceptedAt,
       clientAcceptedStr: clientAcceptedAt ? this._fmtTime(clientAcceptedAt) : '',
       driverAcceptedStr: driverAcceptedAt ? this._fmtTime(driverAcceptedAt) : '',
+      clientFingerprint: clientSig ? fpShort(clientSig.fingerprint) : '',
+      driverFingerprint: driverSig ? fpShort(driverSig.fingerprint) : '',
+      contractVersion: (clientSig || driverSig || {}).contractVersion || '',
       canAdvance
     })
     wx.setNavigationBarTitle({ title: 'Paida · ' + raw.number })
@@ -125,12 +138,28 @@ Page({
   },
 
   async acceptContract() {
+    const t = this.data.t
     try {
       await api.contractAccept(this.loadId)
-      wx.showToast({ title: this.data.t.contract_sig_toast, icon: 'success' })
+      wx.showToast({ title: t.contract_sig_toast, icon: 'success' })
       this.refresh()
     } catch (err) {
-      wx.showToast({ title: (err && err.msg) || this.data.t.err_generic, icon: 'none' })
+      const code = err && err.code
+      if (code === 'KYC_REQUIRED' || code === 'KYC_REJECTED') {
+        wx.showModal({
+          title: t.kyc_required_title,
+          content: t.kyc_required_msg,
+          confirmText: t.kyc_go,
+          cancelText: t.d_reg_cancel || 'Позже',
+          success: (res) => {
+            if (res.confirm) {
+              wx.navigateTo({ url: '/pages/client-kyc/client-kyc' })
+            }
+          }
+        })
+        return
+      }
+      wx.showToast({ title: (err && err.msg) || t.err_generic, icon: 'none' })
     }
   },
 

@@ -66,21 +66,51 @@
       </view>
     </view>
 
-    <!-- 5. Liability -->
+    <!-- 5. Standard clauses -->
     <view class="card">
-      <view class="section-h">5. {{t.contract_section_liability}}</view>
+      <view class="section-h">5. {{t.contract_section_clauses}}</view>
+
+      <view class="clause-block">
+        <view class="clause-title">5.1 {{t.contract_clause_downtime_title}}</view>
+        <view class="obligation-text">{{t.contract_clause_downtime_text}}</view>
+      </view>
+      <view class="divider"></view>
+      <view class="clause-block">
+        <view class="clause-title">5.2 {{t.contract_clause_customs_title}}</view>
+        <view class="obligation-text">{{t.contract_clause_customs_text}}</view>
+      </view>
+      <view class="divider"></view>
+      <view class="clause-block">
+        <view class="clause-title">5.3 {{t.contract_clause_damage_title}}</view>
+        <view class="obligation-text">{{t.contract_clause_damage_text}}</view>
+      </view>
+    </view>
+
+    <!-- 6. Liability -->
+    <view class="card">
+      <view class="section-h">6. {{t.contract_section_liability}}</view>
       <view class="obligation-text">{{t.contract_liability_text}}</view>
       <view class="obligation-text muted-small">{{t.contract_platform_note}}</view>
     </view>
 
-    <!-- 6. Signatures -->
+    <!-- 7. Arbitration -->
     <view class="card">
-      <view class="section-h">6. {{t.contract_section_signatures}}</view>
+      <view class="section-h">7. {{t.contract_section_arbitration}}</view>
+      <view class="obligation-text">{{t.contract_arbitration_text}}</view>
+    </view>
+
+    <!-- 8. Signatures -->
+    <view class="card">
+      <view class="section-h">8. {{t.contract_section_signatures}}</view>
 
       <view class="sig-block">
         <view class="party-role">{{t.contract_sig_client}}</view>
         <block wx:if="{{clientAcceptedAt}}">
           <view class="sig-signed">✓ {{t.contract_sig_accepted}} {{t.contract_sig_at}} {{clientAcceptedStr}}</view>
+          <view class="sig-fp" wx:if="{{clientFingerprint}}">
+            <text class="sig-fp-label">{{t.contract_sig_fingerprint}}</text>
+            <text class="sig-fp-value mono">{{clientFingerprint}}</text>
+          </view>
         </block>
         <block wx:else>
           <view wx:if="{{isClient}}" class="sig-actions">
@@ -96,6 +126,10 @@
         <view class="party-role">{{t.contract_sig_driver}}</view>
         <block wx:if="{{driverAcceptedAt}}">
           <view class="sig-signed">✓ {{t.contract_sig_accepted}} {{t.contract_sig_at}} {{driverAcceptedStr}}</view>
+          <view class="sig-fp" wx:if="{{driverFingerprint}}">
+            <text class="sig-fp-label">{{t.contract_sig_fingerprint}}</text>
+            <text class="sig-fp-value mono">{{driverFingerprint}}</text>
+          </view>
         </block>
         <block wx:else>
           <view wx:if="{{!isClient}}" class="sig-actions">
@@ -104,6 +138,10 @@
           </view>
           <view wx:else class="sig-pending">⏳ {{t.contract_sig_not_yet}}</view>
         </block>
+      </view>
+
+      <view class="sig-legal" wx:if="{{contractVersion}}">
+        <text>{{t.contract_sig_legal_note}} · {{contractVersion}}</text>
       </view>
     </view>
 
@@ -116,9 +154,9 @@
       </view>
     </view>
 
-    <!-- 7. Status timeline -->
+    <!-- 9. Status timeline -->
     <view class="card">
-      <view class="section-h">7. {{t.contract_section_timeline}}</view>
+      <view class="section-h">9. {{t.contract_section_timeline}}</view>
       <view class="timeline">
         <view class="tl-item" wx:for="{{historyLabeled}}" wx:key="at">
           <view class="tl-dot {{index === 0 ? 'active' : ''}}"></view>

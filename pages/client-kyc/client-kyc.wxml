@@ -1,0 +1,57 @@
+<view class="container">
+
+  <view class="header-card">
+    <view class="header-title">{{t.kyc_title}}</view>
+    <view class="header-intro">{{t.kyc_intro}}</view>
+    <view class="status-line" wx:if="{{kyc}}">
+      <text class="status-dot status-{{kyc.status}}"></text>
+      <text class="status-text">{{statusLabel}}</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-h">{{t.kyc_country}}</view>
+    <picker range="{{countryLabels}}" value="{{countryIndex}}" bindchange="onCountry">
+      <view class="picker-row">
+        <text>{{countryLabels[countryIndex]}}</text>
+        <text class="picker-chev">›</text>
+      </view>
+    </picker>
+  </view>
+
+  <view class="card">
+    <view class="section-h">{{t.kyc_type}}</view>
+    <picker range="{{typeLabels}}" value="{{typeIndex}}" bindchange="onType">
+      <view class="picker-row">
+        <text>{{typeLabels[typeIndex]}}</text>
+        <text class="picker-chev">›</text>
+      </view>
+    </picker>
+  </view>
+
+  <view class="card">
+    <view class="field">
+      <view class="label">{{nameFieldLabel}}</view>
+      <input class="input" data-field="name" value="{{form.name}}" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="label">{{idFieldLabel}}</view>
+      <input class="input mono" data-field="idNumber" value="{{form.idNumber}}" bindinput="onInput" />
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-h">{{t.kyc_doc_title}}</view>
+    <view class="doc-hint">{{docHint}}</view>
+    <view class="doc-slot" bindtap="chooseDoc">
+      <image wx:if="{{doc.preview}}" class="doc-preview" src="{{doc.preview}}" mode="aspectFill" />
+      <view wx:elif="{{doc.fileID}}" class="doc-placeholder uploaded">✓ {{t.d_doc_uploaded}}</view>
+      <view wx:else class="doc-placeholder">＋ {{t.d_doc_upload}}</view>
+    </view>
+  </view>
+
+  <button class="btn-primary submit" bindtap="submit" disabled="{{loading}}">
+    {{t.kyc_submit}}
+  </button>
+
+</view>

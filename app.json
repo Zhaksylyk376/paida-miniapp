@@ -7,7 +7,8 @@
     "pages/driver-register/driver-register",
     "pages/applications/applications",
     "pages/contract/contract",
-    "pages/admin/admin"
+    "pages/admin/admin",
+    "pages/client-kyc/client-kyc"
   ],
   "window": {
     "backgroundTextStyle": "light",

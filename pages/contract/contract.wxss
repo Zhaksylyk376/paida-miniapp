@@ -232,6 +232,43 @@
   border-top: 1rpx dashed #e5e7eb;
 }
 
+.clause-block { padding: 12rpx 0; }
+.clause-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4rpx;
+}
+
+.sig-fp {
+  margin-top: 10rpx;
+  padding: 10rpx 14rpx;
+  background: #f3f4f6;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+}
+.sig-fp-label {
+  font-size: 20rpx;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+.sig-fp-value {
+  font-size: 24rpx;
+  color: #111827;
+  word-break: break-all;
+}
+.sig-legal {
+  margin-top: 18rpx;
+  padding-top: 14rpx;
+  border-top: 1rpx dashed #e5e7eb;
+  font-size: 20rpx;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
 .sig-block { padding: 14rpx 0; }
 
 .sig-actions { margin-top: 12rpx; }

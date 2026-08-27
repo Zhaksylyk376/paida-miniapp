@@ -45,6 +45,20 @@
     </view>
   </block>
 
+  <!-- ============ CLIENT KYC ============ -->
+  <block wx:if="{{role === 'client'}}">
+    <view class="card" bindtap="goKyc">
+      <view class="title">{{t.kyc_title}}</view>
+      <view class="text">{{t.kyc_intro}}</view>
+      <view class="profile-status status-{{(kyc.status) || 'none'}}">
+        <block wx:if="{{kyc && kyc.status === 'approved'}}">✅ {{kycStatusLabel}}</block>
+        <block wx:elif="{{kyc && kyc.status === 'submitted'}}">⏳ {{kycStatusLabel}}</block>
+        <block wx:elif="{{kyc && kyc.status === 'rejected'}}">✕ {{kycStatusLabel}}</block>
+        <block wx:else>· {{kycStatusLabel}}</block>
+      </view>
+    </view>
+  </block>
+
   <!-- ============ ABOUT PAIDA ============ -->
   <block wx:if="{{role === 'client'}}">
     <view class="card">

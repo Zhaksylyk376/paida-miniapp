@@ -53,6 +53,10 @@ module.exports = {
   driverGet:   ()               => call('driverGet'),
   driverRegister: (form, docs)  => call('driverRegister', { form, docs }),
 
+  // KYC клиента (身份证/营业执照/ИИН/БИН)
+  clientKycGet:    ()               => call('clientKycGet'),
+  clientKycSubmit: (form, docFileID) => call('clientKycSubmit', { form, docFileID }),
+
   // Заказы — клиент
   orderCreate: (form)           => call('orderCreate', { form }),
   myOrders:    ()               => call('myOrders'),

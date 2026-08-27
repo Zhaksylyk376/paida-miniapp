@@ -7,7 +7,9 @@ Page({
     t: {},
     lang: 'zh',
     role: 'client',
-    profile: null
+    profile: null,
+    kyc: null,
+    kycStatusLabel: ''
   },
 
   async onShow() {
@@ -25,9 +27,21 @@ Page({
     if (role === 'driver') {
       try { this.setData({ profile: await api.driverGet() }) }
       catch (e) { this.setData({ profile: null }) }
+      this.setData({ kyc: null, kycStatusLabel: '' })
     } else {
       this.setData({ profile: null })
+      try {
+        const kyc = await api.clientKycGet()
+        this.setData({
+          kyc,
+          kycStatusLabel: kyc ? (t['kyc_status_' + kyc.status] || '') : t.kyc_status_none
+        })
+      } catch (e) { this.setData({ kyc: null, kycStatusLabel: t.kyc_status_none }) }
     }
+  },
+
+  goKyc() {
+    wx.navigateTo({ url: '/pages/client-kyc/client-kyc' })
   },
 
   switchLang(e) {
