@@ -12,7 +12,7 @@
 // ⚠️ ВПИШИ СЮДА адрес своего задеплоенного Worker'а.
 // Обычно вида https://paida-api.<твой-worker-subdomain>.workers.dev
 // или (если привязал свой домен) https://api.paida.com
-const API_BASE = ''
+const API_BASE = 'https://paida-api.paida.workers.dev'
 
 const TOKEN_KEY = 'paida_device_token'
 let _demo = false
