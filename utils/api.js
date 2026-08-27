@@ -1,14 +1,23 @@
 // ============================================================
-//  API — тонкая обёртка над облачной функцией «paida».
+//  API — тонкая обёртка над Paida REST-бэкендом (Cloudflare Worker).
 //
-//  Демо-режим: если облако не настроено (cloudEnv не заполнен),
-//  api не бьётся об сервер, а возвращает разумные пустые дефолты.
-//  Это позволяет запускать UI на test-AppID без облачных прав.
+//  Все обращения идут одним POST'ом с полем `action` — как раньше
+//  было в облачной функции WeChat. Токен устройства = uuid из
+//  wx.setStorageSync, передаётся в заголовке `Authorization: Bearer`.
+//
+//  Демо-режим: если API_BASE пустой или запрос упал по сети —
+//  api возвращает пустые дефолты и не бьёт по красным ошибкам.
 // ============================================================
 
+// ⚠️ ВПИШИ СЮДА адрес своего задеплоенного Worker'а.
+// Обычно вида https://paida-api.<твой-worker-subdomain>.workers.dev
+// или (если привязал свой домен) https://api.paida.com
+const API_BASE = ''
+
+const TOKEN_KEY = 'paida_device_token'
 let _demo = false
 
-// Дефолтные значения на каждый action в демо-режиме
+// Дефолты для демо-режима и сетевых сбоев
 const DEMO_DEFAULTS = {
   whoami:            { openid: 'demo', isAdmin: false },
   login:             { openid: 'demo', isAdmin: false, role: 'client', driverStatus: null, kycStatus: null },
@@ -21,48 +30,80 @@ const DEMO_DEFAULTS = {
   adminDrivers:      [],
   orderGet:          { order: null, driver: null }
 }
+const isReadOnly = (action) => DEMO_DEFAULTS.hasOwnProperty(action)
+const demoResult = (action) => isReadOnly(action) ? DEMO_DEFAULTS[action] : null
 
-function _demoResult(action) {
-  return DEMO_DEFAULTS.hasOwnProperty(action) ? DEMO_DEFAULTS[action] : null
+function ensureToken() {
+  let t = wx.getStorageSync(TOKEN_KEY)
+  if (!t) {
+    t = _uuid()
+    wx.setStorageSync(TOKEN_KEY, t)
+  }
+  return t
+}
+
+function _uuid() {
+  // Простой RFC-4122 v4 uuid — Math.random для WeChat mini-program достаточно.
+  const s = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+  return s.replace(/[xy]/g, (c) => {
+    const r = Math.random() * 16 | 0
+    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
 }
 
 function call(action, payload) {
-  if (_demo) {
-    // В демо-режиме мутирующие действия отклоняем, чтобы UI показал toast
-    const readOnly = DEMO_DEFAULTS.hasOwnProperty(action)
-    if (readOnly) return Promise.resolve(_demoResult(action))
+  if (_demo || !API_BASE) {
+    if (isReadOnly(action)) return Promise.resolve(demoResult(action))
     return Promise.reject({ code: 'DEMO', msg: 'Демо-режим · сервер не подключён' })
   }
+  const token = ensureToken()
   return new Promise((resolve, reject) => {
-    wx.cloud.callFunction({
-      name: 'paida',
+    wx.request({
+      url: `${API_BASE}/api/paida`,
+      method: 'POST',
+      header: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       data: Object.assign({ action }, payload || {}),
       success: (res) => {
-        const r = res.result || {}
+        const r = res.data || {}
         if (r.ok) resolve(r.data)
         else reject({ code: r.code || 'ERR', msg: r.msg || 'Ошибка' })
       },
       fail: (err) => {
-        console.error('[api] callFunction fail', action, err)
+        console.error('[api] request fail', action, err)
+        if (isReadOnly(action)) return resolve(demoResult(action))
         reject({ code: 'NETWORK', msg: 'Нет связи с сервером' })
       }
     })
   })
 }
 
-// Загрузка файла (документа/фото) в облачное хранилище.
+// Загрузка файла (документа/фото) через multipart POST в /api/upload.
+// Возвращает fileID (ключ в R2), который потом отдаём в action'ы (KYC, driver).
 function uploadFile(tempFilePath, folder) {
-  if (_demo) {
+  if (_demo || !API_BASE) {
     return Promise.reject({ code: 'DEMO', msg: 'Демо-режим · загрузка файлов недоступна' })
   }
-  const ext = (tempFilePath.match(/\.\w+$/) || ['.jpg'])[0]
-  const rand = Math.floor(Math.random() * 1e9)
-  const cloudPath = `${folder}/${Date.now()}_${rand}${ext}`
+  const token = ensureToken()
   return new Promise((resolve, reject) => {
-    wx.cloud.uploadFile({
-      cloudPath,
+    wx.uploadFile({
+      url: `${API_BASE}/api/upload`,
       filePath: tempFilePath,
-      success: (res) => resolve(res.fileID),
+      name: 'file',
+      header: { 'Authorization': `Bearer ${token}` },
+      formData: { folder: folder || 'misc' },
+      success: (res) => {
+        try {
+          const r = JSON.parse(res.data)
+          if (r.ok) resolve(r.data.fileID)
+          else reject({ code: r.code || 'UPLOAD', msg: r.msg || 'Ошибка загрузки' })
+        } catch (e) {
+          reject({ code: 'UPLOAD', msg: 'Некорректный ответ сервера' })
+        }
+      },
       fail: (err) => {
         console.error('[api] uploadFile fail', err)
         reject({ code: 'UPLOAD', msg: 'Не удалось загрузить файл' })
@@ -71,11 +112,22 @@ function uploadFile(tempFilePath, folder) {
   })
 }
 
+// Полный URL к файлу в R2 — можно вставлять в <image src>
+function fileURL(fileID) {
+  if (!fileID) return ''
+  if (fileID.startsWith('http')) return fileID
+  if (!API_BASE) return ''
+  return `${API_BASE}/uploads/${fileID}`
+}
+
 module.exports = {
   call,
   uploadFile,
+  fileURL,
+  ensureToken,
   _setDemo: (v) => { _demo = !!v },
-  isDemo:   () => _demo,
+  isDemo:   () => _demo || !API_BASE,
+  apiBase:  () => API_BASE,
 
   // Сессия / роль
   whoami:      ()               => call('whoami'),

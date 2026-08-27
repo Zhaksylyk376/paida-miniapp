@@ -4,16 +4,11 @@ const api = require('./utils/api.js')
 
 App({
   onLaunch() {
-    const env = this.globalData.cloudEnv
-    const cloudReady = !!wx.cloud && env && env !== 'REPLACE_WITH_YOUR_ENV_ID'
-    this.globalData.demoMode = !cloudReady
+    // Один раз генерируем/читаем device-токен. Он используется как openid.
+    api.ensureToken()
 
-    if (cloudReady) {
-      wx.cloud.init({ env, traceUser: true })
-    } else {
-      console.warn('[Paida] Демо-режим: облако не настроено (пропиши cloudEnv в app.js). Сервер отключён, UI работает как витрина.')
-    }
-    api._setDemo(this.globalData.demoMode)
+    // Если API_BASE пустой — крутимся в демо-режиме (сервер не подключён).
+    this.globalData.demoMode = api.isDemo()
 
     this.globalData.lang = i18n.getLang()
     this.globalData.role = i18n.getRole()
@@ -57,11 +52,6 @@ App({
   },
 
   globalData: {
-    // ⚠️ ВПИШИ СЮДА env-id своего облака (из консоли 云开发 → Настройки → env ID)
-    // Если оставить 'REPLACE_WITH_YOUR_ENV_ID' — приложение запустится в
-    // ДЕМО-РЕЖИМЕ (без сервера). Все списки будут пусты, но UI работает.
-    cloudEnv: 'REPLACE_WITH_YOUR_ENV_ID',
-
     lang: 'zh',
     role: 'client',
     brand: config.BRAND,

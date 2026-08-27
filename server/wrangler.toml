@@ -1,0 +1,21 @@
+name = "paida-api"
+main = "src/index.js"
+compatibility_date = "2026-08-27"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 — SQL база (users / drivers / orders / applications)
+[[d1_databases]]
+binding = "DB"
+database_name = "paida"
+# после `wrangler d1 create paida` подставь сюда database_id из вывода
+database_id = "REPLACE_WITH_D1_ID"
+
+# R2 — хранилище фото документов (техпаспорт, права, ID клиента)
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "paida-uploads"
+
+# Токены админов через запятую. Ставь через `wrangler secret put ADMIN_TOKENS`
+# (или в dev через .dev.vars — см. README)
+[vars]
+ADMIN_TOKENS = ""
