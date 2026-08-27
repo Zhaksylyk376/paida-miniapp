@@ -1,5 +1,6 @@
 # WeChat DevTools private files
 project.private.config.json
+.cloudbase/
 
 # System
 .DS_Store
