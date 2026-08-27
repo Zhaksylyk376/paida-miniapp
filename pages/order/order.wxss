@@ -69,6 +69,31 @@
   width: 100%;
   height: 320rpx;
 }
+.route-legend {
+  padding: 16rpx 20rpx 18rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.route-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 25rpx;
+  color: #374151;
+  padding: 2rpx 0;
+}
+.route-label { color: #6b7280; }
+.route-value { color: #111827; font-variant-numeric: tabular-nums; }
+.route-value.strong { font-weight: 700; }
+.route-hint { font-size: 24rpx; color: #6b7280; }
+.route-hint.route-err { color: #b91c1c; }
+.route-source {
+  font-size: 20rpx;
+  color: #9ca3af;
+  margin-top: 6rpx;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
 
 .label {
   font-size: 26rpx;

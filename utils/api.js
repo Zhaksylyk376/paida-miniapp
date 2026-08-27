@@ -31,7 +31,8 @@ const DEMO_DEFAULTS = {
   availableOrders:   [],
   orderApplications: { order: null, applications: [] },
   adminDrivers:      [],
-  orderGet:          { order: null, driver: null }
+  orderGet:          { order: null, driver: null },
+  routeEstimate:     null
 }
 const isReadOnly = (action) => DEMO_DEFAULTS.hasOwnProperty(action)
 const demoResult = (action) => isReadOnly(action) ? DEMO_DEFAULTS[action] : null
@@ -147,6 +148,10 @@ module.exports = {
   // KYC клиента (身份证/营业执照/ИИН/БИН)
   clientKycGet:    ()               => call('clientKycGet'),
   clientKycSubmit: (form, docFileID) => call('clientKycSubmit', { form, docFileID }),
+
+  // Расчёт маршрута (OSM + OSRM)
+  routeEstimate: (fromCity, toCity, borderCode) =>
+                                   call('routeEstimate', { fromCity, toCity, borderCode }),
 
   // Заказы — клиент
   orderCreate: (form)           => call('orderCreate', { form }),

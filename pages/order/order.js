@@ -25,6 +25,9 @@ Page({
     mapMarkers: [],
     mapCenter: { lat: 43.25, lng: 76.9 },
     showMap: false,
+    route: null,       // { totalKm, driveHours, driveDays, source, fromResolved, toResolved }
+    routeLoading: false,
+    routeError: '',
     loading: false,
     // client — мои заказы
     myOrders: [],
@@ -81,6 +84,31 @@ Page({
     const field = e.currentTarget.dataset.field
     this.setData({ [`form.${field}`]: e.detail.value })
     if (field === 'weight' || field === 'volume') this.recalc()
+    if (field === 'fromCity' || field === 'toCity') this._debounceRouteEstimate()
+  },
+
+  _debounceRouteEstimate() {
+    if (this._routeTimer) clearTimeout(this._routeTimer)
+    this._routeTimer = setTimeout(() => this.recalcRoute(), 800)
+  },
+
+  async recalcRoute() {
+    const { fromCity, toCity, borderCode } = this.data.form
+    if (!fromCity || !toCity || !borderCode) {
+      this.setData({ route: null, routeError: '' })
+      return
+    }
+    this.setData({ routeLoading: true, routeError: '' })
+    try {
+      const r = await api.routeEstimate(fromCity, toCity, borderCode)
+      this.setData({ route: r, routeLoading: false })
+    } catch (err) {
+      this.setData({
+        route: null,
+        routeLoading: false,
+        routeError: (err && err.msg) || 'Не удалось построить маршрут'
+      })
+    }
   },
 
   onCountryChange(e) {
@@ -109,6 +137,7 @@ Page({
       'form.borderName': border.name
     })
     this.refreshBorderMap()
+    this.recalcRoute()
   },
 
   refreshBorderMap() {
@@ -189,6 +218,7 @@ Page({
       },
       price: null, priceFormatted: '',
       mapMarkers: [], showMap: false,
+      route: null, routeError: '',
       selectedCountryIndex: 0, selectedBorderIndex: -1
     })
   },

@@ -12,6 +12,16 @@ const app = new Hono()
 
 const CONTRACT_VERSION = 'paida-v1-2026-08'
 
+// Реальные координаты пунктов пропуска (WGS84).
+// Дублируется из фронта — Worker не имеет доступа к utils/config.js.
+const BORDER_COORDS = {
+  KHORGOS:    { lat: 44.2135, lng: 80.4136 },
+  ALASHANKOU: { lat: 45.1793, lng: 82.5647 },
+  BAKHTY:     { lat: 46.6800, lng: 82.9000 },
+  TORUGART:   { lat: 40.6000, lng: 75.4000 },
+  IRKESHTAM:  { lat: 39.6900, lng: 74.8500 }
+}
+
 app.use('*', cors({
   origin: '*',
   allowMethods: ['GET', 'POST', 'OPTIONS'],
@@ -99,6 +109,8 @@ app.post('/api/paida', async (c) => {
 
       case 'clientKycGet':      return c.json(await clientKycGet(env, token))
       case 'clientKycSubmit':   return c.json(await clientKycSubmit(env, token, body))
+
+      case 'routeEstimate':     return c.json(await routeEstimate(body))
 
       case 'orderCreate':       return c.json(await orderCreate(env, token, body))
       case 'myOrders':          return c.json(await myOrders(env, token))
@@ -312,6 +324,65 @@ async function requireClientKyc(env, openid) {
   if (!u || !u.kyc_status) return { ok: false }
   if (u.kyc_status === 'rejected') return { ok: false, rejected: true, reason: u.kyc_reject_reason }
   return { ok: true }
+}
+
+// ------------------------------------------------------------
+//  РАСЧЁТ МАРШРУТА через OpenStreetMap (Nominatim + OSRM)
+//  Никаких выдумок — реальные километры и время в пути.
+//  Nominatim просит User-Agent — обязательно.
+//  Публичные сервисы имеют rate-limits, для MVP приемлемо;
+//  для прода — self-host OSRM или взять OpenRouteService key.
+// ------------------------------------------------------------
+const UA = 'Paida-CargoApp/1.0 (github.com/Zhaksylyk376/paida-miniapp)'
+
+async function geocode(city) {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(city)}`
+  const res = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Language': 'en,ru,zh' } })
+  if (!res.ok) return null
+  const data = await res.json()
+  if (!data || !data.length) return null
+  return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), name: data[0].display_name }
+}
+
+async function osrmRoute(from, to) {
+  const url = `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=false`
+  const res = await fetch(url, { headers: { 'User-Agent': UA } })
+  if (!res.ok) return null
+  const data = await res.json()
+  const r = data && data.routes && data.routes[0]
+  if (!r) return null
+  return { km: r.distance / 1000, hours: r.duration / 3600 }
+}
+
+async function routeEstimate(body) {
+  const fromCity = String(body.fromCity || '').trim()
+  const toCity   = String(body.toCity || '').trim()
+  const borderCode = body.borderCode
+  const border = BORDER_COORDS[borderCode]
+  if (!border) return fail('BAD_BORDER', 'Неизвестный пункт пропуска')
+  if (!fromCity || !toCity) return fail('MISSING_CITIES', 'Укажите города отправления и назначения')
+
+  // Параллелим геокодинг двух городов
+  const [fromCoords, toCoords] = await Promise.all([geocode(fromCity), geocode(toCity)])
+  if (!fromCoords) return fail('GEOCODE_FROM', `Не нашли город "${fromCity}" на карте`)
+  if (!toCoords)   return fail('GEOCODE_TO',   `Не нашли город "${toCity}" на карте`)
+
+  const [leg1, leg2] = await Promise.all([
+    osrmRoute(fromCoords, border),
+    osrmRoute(border, toCoords)
+  ])
+  if (!leg1 || !leg2) return fail('ROUTE_FAIL', 'Не удалось построить маршрут')
+
+  return ok({
+    fromKm:     Math.round(leg1.km),
+    toKm:       Math.round(leg2.km),
+    totalKm:    Math.round(leg1.km + leg2.km),
+    driveHours: Math.round((leg1.hours + leg2.hours) * 10) / 10,
+    driveDays:  Math.ceil((leg1.hours + leg2.hours) / 24),
+    fromResolved: fromCoords.name,
+    toResolved:   toCoords.name,
+    source: 'OpenStreetMap'
+  })
 }
 
 // ------------------------------------------------------------
