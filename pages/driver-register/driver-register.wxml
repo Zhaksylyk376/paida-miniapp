@@ -5,12 +5,12 @@
     <view class="subtitle">{{t.d_reg_subtitle}}</view>
 
     <view class="form-item">
-      <view class="label">{{t.d_reg_fullname}} *</view>
+      <view class="label">{{t.d_reg_fullname}}</view>
       <input class="form-input" placeholder="{{t.d_reg_fullname_ph}}" value="{{form.fullname}}" bindinput="onInput" data-field="fullname" />
     </view>
 
     <view class="form-item">
-      <view class="label">{{t.d_reg_phone}} *</view>
+      <view class="label">{{t.d_reg_phone}}</view>
       <input class="form-input" type="number" placeholder="{{t.d_reg_phone_ph}}" value="{{form.phone}}" bindinput="onInput" data-field="phone" />
     </view>
 
@@ -20,12 +20,12 @@
     </view>
 
     <view class="form-item">
-      <view class="label">{{t.d_reg_truck}} *</view>
+      <view class="label">{{t.d_reg_truck}}</view>
       <input class="form-input" placeholder="{{t.d_reg_truck_ph}}" value="{{form.truck}}" bindinput="onInput" data-field="truck" />
     </view>
 
     <view class="form-item">
-      <view class="label">{{t.d_reg_plate}} *</view>
+      <view class="label">{{t.d_reg_plate}}</view>
       <input class="form-input" placeholder="{{t.d_reg_plate_ph}}" value="{{form.plate}}" bindinput="onInput" data-field="plate" />
     </view>
 
@@ -37,6 +37,57 @@
     <view class="form-item">
       <view class="label">{{t.d_reg_route}}</view>
       <input class="form-input" placeholder="{{t.d_reg_route_ph}}" value="{{form.route}}" bindinput="onInput" data-field="route" />
+    </view>
+  </view>
+
+  <!-- ============ ДОКУМЕНТЫ ============ -->
+  <view class="card">
+    <view class="section-h">{{t.d_reg_docs_title}}</view>
+    <view class="hint-small">{{t.d_reg_docs_hint}}</view>
+
+    <!-- Техпаспорт -->
+    <view class="doc-item">
+      <view class="doc-label">{{t.d_doc_techpassport}} *</view>
+      <view class="doc-uploader" bindtap="chooseDoc" data-key="techpassport">
+        <block wx:if="{{docs.techpassport.preview || docs.techpassport.fileID}}">
+          <image class="doc-preview" src="{{docs.techpassport.preview || docs.techpassport.fileID}}" mode="aspectFill" />
+          <view class="doc-badge">✓ {{t.d_doc_uploaded}} · {{t.d_doc_replace}}</view>
+        </block>
+        <view wx:else class="doc-placeholder">
+          <view class="doc-plus">＋</view>
+          <view class="doc-hint">{{t.d_doc_upload}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Права -->
+    <view class="doc-item">
+      <view class="doc-label">{{t.d_doc_license}} *</view>
+      <view class="doc-uploader" bindtap="chooseDoc" data-key="driverlicense">
+        <block wx:if="{{docs.driverlicense.preview || docs.driverlicense.fileID}}">
+          <image class="doc-preview" src="{{docs.driverlicense.preview || docs.driverlicense.fileID}}" mode="aspectFill" />
+          <view class="doc-badge">✓ {{t.d_doc_uploaded}} · {{t.d_doc_replace}}</view>
+        </block>
+        <view wx:else class="doc-placeholder">
+          <view class="doc-plus">＋</view>
+          <view class="doc-hint">{{t.d_doc_upload}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Фото машины -->
+    <view class="doc-item">
+      <view class="doc-label">{{t.d_doc_carphoto}} *</view>
+      <view class="doc-uploader" bindtap="chooseDoc" data-key="carphoto">
+        <block wx:if="{{docs.carphoto.preview || docs.carphoto.fileID}}">
+          <image class="doc-preview" src="{{docs.carphoto.preview || docs.carphoto.fileID}}" mode="aspectFill" />
+          <view class="doc-badge">✓ {{t.d_doc_uploaded}} · {{t.d_doc_replace}}</view>
+        </block>
+        <view wx:else class="doc-placeholder">
+          <view class="doc-plus">＋</view>
+          <view class="doc-hint">{{t.d_doc_upload}}</view>
+        </view>
+      </view>
     </view>
 
     <button class="btn-primary" bindtap="submit" loading="{{loading}}">{{t.d_reg_submit}}</button>

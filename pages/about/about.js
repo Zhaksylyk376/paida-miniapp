@@ -1,5 +1,6 @@
 const app = getApp()
 const i18n = require('../../utils/i18n.js')
+const api = require('../../utils/api.js')
 
 Page({
   data: {
@@ -9,19 +10,24 @@ Page({
     profile: null
   },
 
-  onShow() {
+  async onShow() {
+    await app.whenReady()
     this.refreshAll()
   },
 
-  refreshAll() {
+  async refreshAll() {
     const lang = i18n.getLang()
     const role = i18n.getRole()
     const t = i18n.t(lang)
-    this.setData({
-      lang, role, t,
-      profile: role === 'driver' ? app.getDriverProfile() : null
-    })
+    this.setData({ lang, role, t })
     wx.setNavigationBarTitle({ title: role === 'driver' ? t.nav_about_d : t.nav_about })
+
+    if (role === 'driver') {
+      try { this.setData({ profile: await api.driverGet() }) }
+      catch (e) { this.setData({ profile: null }) }
+    } else {
+      this.setData({ profile: null })
+    }
   },
 
   switchLang(e) {

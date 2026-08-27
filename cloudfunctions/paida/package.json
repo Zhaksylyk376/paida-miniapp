@@ -1,0 +1,9 @@
+{
+  "name": "paida",
+  "version": "1.0.0",
+  "description": "Paida — облачная функция-роутер (заказы, водители, отклики, договор, админ)",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

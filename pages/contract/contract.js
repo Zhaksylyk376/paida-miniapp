@@ -1,8 +1,9 @@
 const app = getApp()
 const i18n = require('../../utils/i18n.js')
+const api = require('../../utils/api.js')
 
 const STATUS_FLOW = {
-  new:        [],  // никаких переходов от new (нужно чтобы водитель сначала «взял»)
+  new:        [],
   taken:      [{ value: 'loaded',      emoji: '📦' }],
   loaded:     [{ value: 'in_transit',  emoji: '🚛' }],
   in_transit: [{ value: 'at_border',   emoji: '🛃' }, { value: 'delivered', emoji: '✅' }],
@@ -30,26 +31,31 @@ Page({
   },
 
   onLoad(query) {
-    this.loadId = Number(query.id)
+    this.loadId = query.id
     this.viewRole = query.role === 'client' ? 'client' : 'driver'
   },
 
-  onShow() { this.refresh() },
+  async onShow() {
+    await app.whenReady()
+    this.refresh()
+  },
 
-  refresh() {
+  async refresh() {
     const t = i18n.t(i18n.getLang())
     const isClient = this.viewRole === 'client'
 
-    const raw = app.getClientOrder(this.loadId)
-    if (!raw) {
+    let res
+    try {
+      res = await api.orderGet(this.loadId)
+    } catch (e) {
       wx.showToast({ title: '×', icon: 'none' })
       setTimeout(() => wx.navigateBack(), 500)
       return
     }
+    const raw = res.order
+    const driver = res.driver
 
     const load = this._shapeOrder(raw)
-    const driver = raw.driverId ? app.getDriverProfile() : null
-    const clientPhone = raw.phone || ''
 
     const historyLabeled = (raw.history || []).slice().reverse().map(h => ({
       label: this._statusLabel(h.status, t),
@@ -58,13 +64,12 @@ Page({
 
     const driverAcceptedAt = raw.driverAcceptedAt || 0
     const clientAcceptedAt = raw.clientAcceptedAt || 0
-    const canAdvance = !isClient && driverAcceptedAt > 0
+    const bothSigned = driverAcceptedAt > 0 && clientAcceptedAt > 0
+    const canAdvance = !isClient && bothSigned
 
-    const nextStatuses = (!isClient && canAdvance)
+    const nextStatuses = canAdvance
       ? (STATUS_FLOW[raw.status] || []).map(ns => ({
-          value: ns.value,
-          emoji: ns.emoji,
-          label: this._statusLabel(ns.value, t)
+          value: ns.value, emoji: ns.emoji, label: this._statusLabel(ns.value, t)
         }))
       : []
 
@@ -75,7 +80,7 @@ Page({
       statusLabel: this._statusLabel(raw.status, t),
       historyLabeled,
       nextStatuses,
-      clientPhone,
+      clientPhone: raw.phone || '',
       clientAcceptedAt,
       driverAcceptedAt,
       clientAcceptedStr: clientAcceptedAt ? this._fmtTime(clientAcceptedAt) : '',
@@ -89,7 +94,7 @@ Page({
     const dest = [o.countryName, o.toCity].filter(Boolean).join(', ')
     const route = [o.fromCity, dest].filter(Boolean).join(' → ')
     return {
-      id: o.id,
+      id: o._id,
       number: o.number,
       status: o.status || 'new',
       createdAt: o.createdAt,
@@ -107,13 +112,9 @@ Page({
 
   _statusLabel(s, t) {
     return ({
-      new: t.status_new,
-      taken: t.status_taken,
-      released: t.status_released,
-      loaded: t.status_loaded,
-      in_transit: t.status_in_transit,
-      at_border: t.status_at_border,
-      delivered: t.status_delivered
+      new: t.status_new, taken: t.status_taken, released: t.status_released,
+      loaded: t.status_loaded, in_transit: t.status_in_transit,
+      at_border: t.status_at_border, delivered: t.status_delivered
     })[s] || s
   },
 
@@ -123,14 +124,14 @@ Page({
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
   },
 
-  acceptContract() {
-    const now = Date.now()
-    const patch = this.data.isClient
-      ? { clientAcceptedAt: now }
-      : { driverAcceptedAt: now }
-    app.updateClientOrder(this.loadId, patch)
-    this.refresh()
-    wx.showToast({ title: this.data.t.contract_sig_toast, icon: 'success' })
+  async acceptContract() {
+    try {
+      await api.contractAccept(this.loadId)
+      wx.showToast({ title: this.data.t.contract_sig_toast, icon: 'success' })
+      this.refresh()
+    } catch (err) {
+      wx.showToast({ title: (err && err.msg) || this.data.t.err_generic, icon: 'none' })
+    }
   },
 
   callClient() {
@@ -150,14 +151,15 @@ Page({
     })
   },
 
-  advance(e) {
+  async advance(e) {
     const t = this.data.t
     const newStatus = e.currentTarget.dataset.status
-    const raw = app.getClientOrder(this.loadId)
-    if (!raw) return
-    const updatedHistory = (raw.history || []).concat([{ status: newStatus, at: Date.now() }])
-    app.updateClientOrder(this.loadId, { status: newStatus, history: updatedHistory })
-    this.refresh()
-    wx.showToast({ title: t.status_update_success, icon: 'success' })
+    try {
+      await api.orderAdvance(this.loadId, newStatus)
+      wx.showToast({ title: t.status_update_success, icon: 'success' })
+      this.refresh()
+    } catch (err) {
+      wx.showToast({ title: (err && err.msg) || t.err_generic, icon: 'none' })
+    }
   }
 })

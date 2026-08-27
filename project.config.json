@@ -48,6 +48,7 @@
     "disableSWC": true
   },
   "compileType": "miniprogram",
+  "cloudfunctionRoot": "cloudfunctions/",
   "libVersion": "3.0.0",
   "appid": "wxe0c0450f56b25faa",
   "projectname": "wechat-cargo-miniapp",

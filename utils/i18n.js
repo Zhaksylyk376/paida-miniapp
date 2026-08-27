@@ -521,6 +521,146 @@ const dict = {
   }
 }
 
+// ================================================================
+//  ДОПОЛНИТЕЛЬНЫЕ КЛЮЧИ (облачная версия): документы, статусы анкеты,
+//  отклики, выбор водителя, админка. Мержим в основной словарь.
+// ================================================================
+Object.assign(dict.zh, {
+  // Документы при регистрации
+  d_reg_docs_title: '证件（必填）',
+  d_reg_docs_hint: '请上传清晰照片，用于 Paida 审核',
+  d_doc_techpassport: '行驶证 / 车辆登记证',
+  d_doc_license: '驾驶证',
+  d_doc_carphoto: '车辆照片',
+  d_doc_upload: '上传照片',
+  d_doc_replace: '重新上传',
+  d_doc_uploaded: '已上传',
+  d_reg_checking: '正在提交并自动检查…',
+
+  // Автопроверки — сообщения об ошибках
+  err_VALIDATION: '请检查必填项和证件',
+  err_DUP_PLATE: '该车牌已被其他司机注册',
+  err_DUP_PHONE: '该手机号已被其他司机注册',
+  err_NETWORK: '无法连接服务器',
+  err_generic: '发生错误',
+
+  // Статус анкеты водителя
+  drv_status_pending: '审核中',
+  drv_status_approved: '已通过',
+  drv_status_rejected: '未通过',
+  drv_gate_pending_title: '资料审核中',
+  drv_gate_pending_msg: 'Paida 正在核对您的证件，通过后即可接单',
+  drv_gate_rejected_title: '审核未通过',
+  drv_gate_none_title: '请先完成司机注册',
+  drv_gate_reregister: '重新提交资料',
+  drv_gate_register: '去注册',
+
+  // Отклики (водитель)
+  apply_btn: '申请接单',
+  apply_applied: '已申请',
+  apply_success: '已提交申请，等待客户选择',
+  apply_msg_ph: '给客户留言（可选）',
+
+  // Отклики (клиент выбирает)
+  nav_applications: '选择司机',
+  apps_title: '申请的司机',
+  apps_empty: '还没有司机申请',
+  apps_choose: '选择该司机',
+  apps_choose_confirm: '确认选择这位司机？',
+  apps_chosen_toast: '已选择司机，正在生成合同',
+  apps_rating: '评分',
+  apps_no_rating: '新司机',
+
+  // Мои заказы (клиент): счётчик откликов
+  order_apps_count: '位司机申请',
+  order_view_apps: '查看并选择',
+  order_open_contract: '查看合同',
+
+  // Админ
+  nav_admin: 'Paida 审核台',
+  admin_title: '司机审核',
+  admin_tab_pending: '待审核',
+  admin_tab_approved: '已通过',
+  admin_tab_rejected: '未通过',
+  admin_empty: '没有记录',
+  admin_view_doc: '查看',
+  admin_approve: '通过',
+  admin_reject: '拒绝',
+  admin_reject_reason: '拒绝原因',
+  admin_done: '已处理',
+  admin_checks: '自动检查',
+  admin_check_ok: '通过',
+  admin_open_admin: '审核台'
+})
+
+Object.assign(dict.ru, {
+  // Документы при регистрации
+  d_reg_docs_title: 'Документы (обязательно)',
+  d_reg_docs_hint: 'Загрузите чёткие фото — они нужны для проверки Paida',
+  d_doc_techpassport: 'Техпаспорт (СРТС)',
+  d_doc_license: 'Водительское удостоверение',
+  d_doc_carphoto: 'Фото автомобиля',
+  d_doc_upload: 'Загрузить фото',
+  d_doc_replace: 'Заменить',
+  d_doc_uploaded: 'Загружено',
+  d_reg_checking: 'Отправляем и проверяем…',
+
+  // Автопроверки — сообщения об ошибках
+  err_VALIDATION: 'Проверьте поля и документы',
+  err_DUP_PLATE: 'Этот гос. номер уже зарегистрирован другим водителем',
+  err_DUP_PHONE: 'Этот телефон уже зарегистрирован другим водителем',
+  err_NETWORK: 'Нет связи с сервером',
+  err_generic: 'Произошла ошибка',
+
+  // Статус анкеты водителя
+  drv_status_pending: 'На проверке',
+  drv_status_approved: 'Одобрен',
+  drv_status_rejected: 'Отклонён',
+  drv_gate_pending_title: 'Анкета на проверке',
+  drv_gate_pending_msg: 'Paida проверяет ваши документы. После одобрения вы сможете принимать заявки',
+  drv_gate_rejected_title: 'Анкета отклонена',
+  drv_gate_none_title: 'Сначала пройдите регистрацию водителя',
+  drv_gate_reregister: 'Подать анкету заново',
+  drv_gate_register: 'Зарегистрироваться',
+
+  // Отклики (водитель)
+  apply_btn: 'Откликнуться',
+  apply_applied: 'Вы откликнулись',
+  apply_success: 'Отклик отправлен, ждите выбора клиента',
+  apply_msg_ph: 'Сообщение клиенту (необязательно)',
+
+  // Отклики (клиент выбирает)
+  nav_applications: 'Выбор водителя',
+  apps_title: 'Откликнувшиеся водители',
+  apps_empty: 'Пока никто не откликнулся',
+  apps_choose: 'Выбрать этого водителя',
+  apps_choose_confirm: 'Выбрать этого водителя?',
+  apps_chosen_toast: 'Водитель выбран, формируем договор',
+  apps_rating: 'Рейтинг',
+  apps_no_rating: 'Новый водитель',
+
+  // Мои заказы (клиент): счётчик откликов
+  order_apps_count: 'откликов',
+  order_view_apps: 'Посмотреть и выбрать',
+  order_open_contract: 'Открыть договор',
+
+  // Админ
+  nav_admin: 'Проверка Paida',
+  admin_title: 'Проверка водителей',
+  admin_tab_pending: 'На проверке',
+  admin_tab_approved: 'Одобрены',
+  admin_tab_rejected: 'Отклонены',
+  admin_empty: 'Нет записей',
+  admin_view_doc: 'Открыть',
+  admin_approve: 'Одобрить',
+  admin_reject: 'Отклонить',
+  admin_reject_reason: 'Причина отказа',
+  admin_done: 'Обработано',
+  admin_checks: 'Автопроверки',
+  admin_check_ok: 'пройдено',
+  admin_open_admin: 'Панель проверки'
+})
+
 function detectSystemLang() {
   try {
     const sys = wx.getSystemInfoSync().language || ''

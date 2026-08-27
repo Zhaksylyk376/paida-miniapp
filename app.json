@@ -5,7 +5,9 @@
     "pages/order/order",
     "pages/about/about",
     "pages/driver-register/driver-register",
-    "pages/contract/contract"
+    "pages/applications/applications",
+    "pages/contract/contract",
+    "pages/admin/admin"
   ],
   "window": {
     "backgroundTextStyle": "light",

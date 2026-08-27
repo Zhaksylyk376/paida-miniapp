@@ -28,31 +28,55 @@
 
   <!-- ============ DRIVER: AVAILABLE ORDERS ============ -->
   <block wx:else>
-    <view class="card">
-      <view class="title">{{t.available_title}}</view>
-      <view class="subtitle">{{t.available_subtitle}}</view>
-    </view>
 
-    <block wx:if="{{availableOrders.length === 0}}">
+    <!-- Допуск: анкета не подана -->
+    <block wx:if="{{gate === 'none'}}">
       <view class="card empty">
-        <view class="empty-icon">📭</view>
-        <view class="empty-text">{{t.available_empty}}</view>
+        <view class="empty-icon">📝</view>
+        <view class="empty-text">{{t.drv_gate_none_title}}</view>
+        <button class="btn-primary" style="margin-top:24rpx" bindtap="goRegister">{{t.drv_gate_register}}</button>
       </view>
     </block>
 
+    <!-- Допуск: анкета на проверке -->
+    <block wx:elif="{{gate === 'pending'}}">
+      <view class="card empty">
+        <view class="empty-icon">⏳</view>
+        <view class="empty-text">{{t.drv_gate_pending_title}}</view>
+        <view class="hint-small" style="text-align:center;margin-top:12rpx">{{t.drv_gate_pending_msg}}</view>
+      </view>
+    </block>
+
+    <!-- Одобрен: список заказов -->
     <block wx:else>
-      <view class="load-card" wx:for="{{availableOrders}}" wx:key="id">
-        <view class="load-header">
-          <view class="load-number">{{item.number}}</view>
-          <view class="load-price" wx:if="{{item.price}}">$ {{item.price}}</view>
-        </view>
-        <view class="load-route">🛣 {{item.route || '—'}}</view>
-        <view class="load-meta" wx:if="{{item.cargo}}">📦 {{item.cargo}}</view>
-        <view class="load-meta muted">🕒 {{item.createdStr}}</view>
-
-        <button class="btn-primary take-btn" bindtap="takeOrder" data-id="{{item.id}}">✋ {{t.available_take}}</button>
+      <view class="card">
+        <view class="title">{{t.available_title}}</view>
+        <view class="subtitle">{{t.available_subtitle}}</view>
       </view>
+
+      <block wx:if="{{availableOrders.length === 0}}">
+        <view class="card empty">
+          <view class="empty-icon">📭</view>
+          <view class="empty-text">{{t.available_empty}}</view>
+        </view>
+      </block>
+
+      <block wx:else>
+        <view class="load-card" wx:for="{{availableOrders}}" wx:key="id">
+          <view class="load-header">
+            <view class="load-number">{{item.number}}</view>
+            <view class="load-price" wx:if="{{item.price}}">$ {{item.price}}</view>
+          </view>
+          <view class="load-route">🛣 {{item.route || '—'}}</view>
+          <view class="load-meta" wx:if="{{item.cargo}}">📦 {{item.cargo}}</view>
+          <view class="load-meta muted">🕒 {{item.createdStr}}</view>
+
+          <button wx:if="{{item.applied}}" class="btn-primary take-btn" disabled="{{true}}">✓ {{t.apply_applied}}</button>
+          <button wx:else class="btn-primary take-btn" bindtap="applyOrder" data-id="{{item.id}}">✋ {{t.apply_btn}}</button>
+        </view>
+      </block>
     </block>
+
   </block>
 
 </view>

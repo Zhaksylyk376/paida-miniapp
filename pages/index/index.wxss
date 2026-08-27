@@ -323,3 +323,10 @@
   padding: 10rpx 20rpx;
   line-height: 1.5;
 }
+
+/* Вход в админ-панель */
+.admin-entry {
+  text-align: center;
+  border: 2rpx solid #eaf0fe;
+}
+.admin-entry .cta-icon { font-size: 56rpx; }

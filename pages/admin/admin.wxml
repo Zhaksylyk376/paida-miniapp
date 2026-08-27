@@ -1,0 +1,71 @@
+<view class="container">
+
+  <block wx:if="{{!isAdmin}}">
+    <view class="card empty">
+      <view class="empty-icon">🔒</view>
+      <view class="empty-text">Только для админа</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="filter-tabs">
+      <view class="filter-tab {{tab === 'pending' ? 'active' : ''}}" bindtap="setTab" data-tab="pending">{{t.admin_tab_pending}}</view>
+      <view class="filter-tab {{tab === 'approved' ? 'active' : ''}}" bindtap="setTab" data-tab="approved">{{t.admin_tab_approved}}</view>
+      <view class="filter-tab {{tab === 'rejected' ? 'active' : ''}}" bindtap="setTab" data-tab="rejected">{{t.admin_tab_rejected}}</view>
+    </view>
+
+    <block wx:if="{{!loading && drivers.length === 0}}">
+      <view class="card empty">
+        <view class="empty-icon">📭</view>
+        <view class="empty-text">{{t.admin_empty}}</view>
+      </view>
+    </block>
+
+    <view class="driver-card" wx:for="{{drivers}}" wx:key="openid">
+      <view class="driver-top">
+        <view class="driver-name">🚛 {{item.fullname}}</view>
+        <view class="driver-rating status-{{item.status}}">{{t['drv_status_' + item.status]}}</view>
+      </view>
+
+      <view class="driver-row"><text class="dr-label">{{t.d_reg_phone}}</text><text class="mono">{{item.phone}}</text></view>
+      <view class="driver-row" wx:if="{{item.wechat}}"><text class="dr-label">{{t.d_reg_wechat}}</text><text>{{item.wechat}}</text></view>
+      <view class="driver-row"><text class="dr-label">{{t.d_reg_truck}}</text><text>{{item.truck}}</text></view>
+      <view class="driver-row"><text class="dr-label">{{t.d_reg_plate}}</text><text class="mono">{{item.plate}}</text></view>
+      <view class="driver-row" wx:if="{{item.license}}"><text class="dr-label">{{t.d_reg_license}}</text><text>{{item.license}}</text></view>
+      <view class="driver-row" wx:if="{{item.route}}"><text class="dr-label">{{t.d_reg_route}}</text><text>{{item.route}}</text></view>
+
+      <!-- Автопроверки -->
+      <view class="checks-row">
+        <text class="check-badge ok">✓ {{t.d_reg_docs_title}}</text>
+        <text class="check-badge ok">✓ {{t.d_reg_plate}}</text>
+        <text class="check-badge ok">✓ {{t.d_reg_phone}}</text>
+      </view>
+
+      <!-- Документы -->
+      <view class="docs-thumbs">
+        <view class="thumb" bindtap="previewDoc" data-url="{{item.docs.techpassport}}">
+          <image class="thumb-img" src="{{item.docs.techpassport}}" mode="aspectFill" />
+          <text class="thumb-cap">{{t.d_doc_techpassport}}</text>
+        </view>
+        <view class="thumb" bindtap="previewDoc" data-url="{{item.docs.driverlicense}}">
+          <image class="thumb-img" src="{{item.docs.driverlicense}}" mode="aspectFill" />
+          <text class="thumb-cap">{{t.d_doc_license}}</text>
+        </view>
+        <view class="thumb" bindtap="previewDoc" data-url="{{item.docs.carphoto}}">
+          <image class="thumb-img" src="{{item.docs.carphoto}}" mode="aspectFill" />
+          <text class="thumb-cap">{{t.d_doc_carphoto}}</text>
+        </view>
+      </view>
+
+      <view class="reject-reason" wx:if="{{item.status === 'rejected' && item.rejectReason}}">✖ {{item.rejectReason}}</view>
+
+      <!-- Кнопки только для pending -->
+      <view class="admin-actions" wx:if="{{item.status === 'pending'}}">
+        <button class="action-btn danger" bindtap="reject" data-openid="{{item.openid}}">{{t.admin_reject}}</button>
+        <button class="action-btn primary" bindtap="approve" data-openid="{{item.openid}}">{{t.admin_approve}}</button>
+      </view>
+    </view>
+
+  </block>
+
+</view>

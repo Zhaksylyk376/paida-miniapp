@@ -1,15 +1,49 @@
 const i18n = require('./utils/i18n.js')
 const config = require('./utils/config.js')
-
-// Единый ID «моего водителя» на устройстве — у нас одна анкета водителя на app install.
-// Когда появится бэкенд — будет реальный driver_id.
-const DEMO_DRIVER_ID = 1
+const api = require('./utils/api.js')
 
 App({
   onLaunch() {
+    // --- Инициализация облака WeChat ---
+    if (!wx.cloud) {
+      console.error('Требуется базовая библиотека 2.2.3+ и включённое облако (云开发)')
+    } else {
+      wx.cloud.init({
+        env: this.globalData.cloudEnv,   // ← впиши env-id своего облака ниже в globalData
+        traceUser: true
+      })
+    }
+
     this.globalData.lang = i18n.getLang()
     this.globalData.role = i18n.getRole()
     setTimeout(() => i18n.applyTabBar(this.globalData.lang, this.globalData.role), 300)
+
+    // Логинимся: получаем openid, роль, статус водителя и права админа
+    this.ensureSession()
+  },
+
+  // Однократный логин; страницы могут дождаться через whenReady()
+  ensureSession() {
+    if (this._sessionPromise) return this._sessionPromise
+    this._sessionPromise = api.login().then((s) => {
+      this.globalData.session = s
+      this.globalData.openid = s.openid
+      this.globalData.isAdmin = s.isAdmin
+      if (s.role) {
+        this.globalData.role = s.role
+        i18n.setRole(s.role)
+      }
+      return s
+    }).catch((e) => {
+      console.error('login failed', e)
+      this._sessionPromise = null   // разрешим повторить позже
+      return null
+    })
+    return this._sessionPromise
+  },
+
+  whenReady() {
+    return this.ensureSession()
   },
 
   onLangChange(lang) {
@@ -22,81 +56,15 @@ App({
     i18n.setRole(role)
   },
 
-  // ---------- ORDERS (единый источник для клиента и водителя) ----------
-  getClientOrders() {
-    return wx.getStorageSync('client_orders') || []
-  },
-  setClientOrders(orders) {
-    wx.setStorageSync('client_orders', orders)
-  },
-  addClientOrder(order) {
-    const orders = this.getClientOrders()
-    orders.unshift(order)
-    this.setClientOrders(orders)
-    return order
-  },
-  getClientOrder(id) {
-    return this.getClientOrders().find(o => o.id === Number(id)) || null
-  },
-  updateClientOrder(id, patch) {
-    const orders = this.getClientOrders()
-    const idx = orders.findIndex(o => o.id === Number(id))
-    if (idx === -1) return null
-    orders[idx] = Object.assign({}, orders[idx], patch)
-    this.setClientOrders(orders)
-    return orders[idx]
-  },
-
-  // Открытые заявки — status=new и никем не взяты
-  getAvailableOrders() {
-    return this.getClientOrders().filter(o => o.status === 'new' && !o.driverId)
-  },
-
-  // Рейсы «моего» водителя
-  getMyDriverOrders() {
-    return this.getClientOrders().filter(o => o.driverId === DEMO_DRIVER_ID)
-  },
-
-  // Водитель берёт заявку
-  takeOrder(id) {
-    const now = Date.now()
-    return this.updateClientOrder(id, {
-      driverId: DEMO_DRIVER_ID,
-      takenAt: now,
-      status: 'taken',
-      history: (this.getClientOrder(id) && this.getClientOrder(id).history || [])
-                 .concat([{ status: 'taken', at: now }])
-    })
-  },
-
-  // Водитель отказывается от рейса (пока не поехал)
-  releaseOrder(id) {
-    const now = Date.now()
-    return this.updateClientOrder(id, {
-      driverId: null,
-      takenAt: null,
-      status: 'new',
-      history: (this.getClientOrder(id) && this.getClientOrder(id).history || [])
-                 .concat([{ status: 'released', at: now }])
-    })
-  },
-
-  DEMO_DRIVER_ID,
-
-  // ---------- DRIVER PROFILE ----------
-  getDriverProfile() {
-    return wx.getStorageSync('driver_profile') || null
-  },
-  setDriverProfile(profile) {
-    wx.setStorageSync('driver_profile', profile)
-  },
-  clearDriverProfile() {
-    wx.removeStorageSync('driver_profile')
-  },
-
   globalData: {
+    // ⚠️ ВПИШИ СЮДА env-id своего облака (из консоли 云开发 → Настройки → env ID)
+    cloudEnv: 'REPLACE_WITH_YOUR_ENV_ID',
+
     lang: 'zh',
     role: 'client',
-    brand: config.BRAND
+    brand: config.BRAND,
+    session: null,
+    openid: null,
+    isAdmin: false
   }
 })

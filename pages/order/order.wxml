@@ -85,17 +85,45 @@
       </view>
 
       <view class="form-item">
+        <view class="label">{{t.d_reg_wechat}}</view>
+        <input class="form-input" placeholder="{{t.d_reg_wechat_ph}}" value="{{form.wechat}}" bindinput="onInput" data-field="wechat" />
+      </view>
+
+      <view class="form-item">
         <view class="label">{{t.order_note}}</view>
         <textarea class="form-textarea" placeholder="{{t.order_note_ph}}" value="{{form.note}}" bindinput="onInput" data-field="note" />
       </view>
 
       <button class="btn-primary" bindtap="submitOrder" loading="{{loading}}">{{t.order_submit}}</button>
     </view>
+
+    <!-- ======= МОИ ЗАКАЗЫ (клиент) ======= -->
+    <block wx:if="{{myOrders.length > 0}}">
+      <view class="load-card" wx:for="{{myOrders}}" wx:key="id"
+            bindtap="openMyOrder" data-id="{{item.id}}" data-hasdriver="{{item.hasDriver}}">
+        <view class="load-header">
+          <view class="load-number">{{item.number}}</view>
+          <view class="load-status status-{{item.status}}">{{item.statusLabel}}</view>
+        </view>
+        <view class="load-route">🛣 {{item.route}}</view>
+        <view class="load-meta" wx:if="{{item.price}}">💰 $ {{item.price}}</view>
+
+        <view class="load-actions">
+          <block wx:if="{{item.hasDriver}}">
+            <button class="status-btn ghost" catchtap="openMyOrder" data-id="{{item.id}}" data-hasdriver="{{true}}">📄 {{t.order_open_contract}}</button>
+          </block>
+          <block wx:else>
+            <button class="status-btn primary" catchtap="openMyOrder" data-id="{{item.id}}" data-hasdriver="{{false}}">
+              👥 {{item.appsCount}} {{t.order_apps_count}} · {{t.order_view_apps}}
+            </button>
+          </block>
+        </view>
+      </view>
+    </block>
   </block>
 
   <!-- ============ DRIVER: MY LOADS ============ -->
   <block wx:else>
-    <!-- Filters -->
     <view class="filter-tabs">
       <view class="filter-tab {{filter === 'active' ? 'active' : ''}}" bindtap="setFilter" data-filter="active">
         {{t.my_loads_active}} ({{counts.active}})
@@ -125,10 +153,6 @@
 
         <view class="load-actions">
           <button class="status-btn ghost" bindtap="openContract" data-id="{{item.id}}">📄 {{t.my_loads_open}}</button>
-        </view>
-
-        <view class="load-footer" wx:if="{{item.status === 'taken'}}">
-          <text class="load-delete" bindtap="releaseLoad" data-id="{{item.id}}">✋ {{t.my_loads_release}}</text>
         </view>
       </view>
     </block>
