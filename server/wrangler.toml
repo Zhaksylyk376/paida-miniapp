@@ -8,7 +8,7 @@ compatibility_flags = ["nodejs_compat"]
 binding = "DB"
 database_name = "paida"
 # после `wrangler d1 create paida` подставь сюда database_id из вывода
-database_id = "REPLACE_WITH_D1_ID"
+database_id = "452d7120-4b42-433d-bf38-4eee7203f8e8"
 
 # R2 — хранилище фото документов (техпаспорт, права, ID клиента)
 [[r2_buckets]]
