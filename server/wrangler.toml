@@ -13,7 +13,7 @@ database_id = "452d7120-4b42-433d-bf38-4eee7203f8e8"
 # R2 — хранилище фото документов (техпаспорт, права, ID клиента)
 [[r2_buckets]]
 binding = "R2"
-bucket_name = "paida-uploads"
+bucket_name = "paida"
 
 # Токены админов через запятую. Ставь через `wrangler secret put ADMIN_TOKENS`
 # (или в dev через .dev.vars — см. README)
