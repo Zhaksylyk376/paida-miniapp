@@ -369,7 +369,6 @@ async function orderCreate(openid, event) {
     wechat: f.wechat || '',
     note: f.note || '',
     price: f.price || null,
-    route: event.route || null,  // { totalKm, queueHours, etaDays, borderCoords, ... }
     status: 'new',            // new → taken → loaded → in_transit → at_border → delivered
     driverId: null,           // openid выбранного водителя
     appsCount: 0,             // сколько откликов
@@ -560,9 +559,7 @@ function contractSnapshot(order, driver, clientKyc) {
       toCity: order.toCity || '',
       goodsType: order.goodsType || '',
       weight: order.weight || '',
-      volume: order.volume || '',
-      totalKm: (order.route && order.route.totalKm) || null,
-      etaDays: (order.route && order.route.etaDays) || null
+      volume: order.volume || ''
     },
     price: order.price || null,
     note: order.note || ''

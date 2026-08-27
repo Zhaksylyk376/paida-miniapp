@@ -69,7 +69,7 @@
 
 .doc-plus {
   font-size: 64rpx;
-  color: #1a56db;
+  color: var(--color-ink);
   line-height: 1;
 }
 

@@ -7,19 +7,18 @@
 
   <block wx:if="{{!loading && applications.length === 0}}">
     <view class="card empty">
-      <view class="empty-icon">🙋</view>
       <view class="empty-text">{{t.apps_empty}}</view>
     </view>
   </block>
 
   <view class="driver-card" wx:for="{{applications}}" wx:key="id">
     <view class="driver-top">
-      <view class="driver-name">🚛 {{item.fullname}}</view>
+      <view class="driver-name">{{item.fullname}}</view>
       <view class="driver-rating">{{item.ratingLabel}}</view>
     </view>
     <view class="driver-row" wx:if="{{item.truck}}"><text class="dr-label">{{t.d_reg_truck}}</text><text>{{item.truck}}</text></view>
     <view class="driver-row" wx:if="{{item.plate}}"><text class="dr-label">{{t.d_reg_plate}}</text><text class="mono">{{item.plate}}</text></view>
-    <view class="driver-msg" wx:if="{{item.message}}">💬 {{item.message}}</view>
+    <view class="driver-msg" wx:if="{{item.message}}">{{item.message}}</view>
 
     <button class="btn-primary" bindtap="chooseDriver" data-openid="{{item.driverOpenid}}">{{t.apps_choose}}</button>
   </view>

@@ -37,8 +37,8 @@
       <view class="profile-row" wx:if="{{profile.route}}"><text class="pr-label">{{t.d_reg_route}}</text><text class="pr-value">{{profile.route}}</text></view>
 
       <view class="profile-status status-{{profile.status || 'pending'}}">
-        <block wx:if="{{profile.status === 'pending'}}">⏳ {{t.d_home_pending_title}}</block>
-        <block wx:else>✅ Approved</block>
+        <block wx:if="{{profile.status === 'pending'}}">{{t.d_home_pending_title}}</block>
+        <block wx:else>Approved</block>
       </view>
 
       <button class="btn-secondary" bindtap="editProfile">{{t.d_profile_edit}}</button>
@@ -50,12 +50,7 @@
     <view class="card" bindtap="goKyc">
       <view class="title">{{t.kyc_title}}</view>
       <view class="text">{{t.kyc_intro}}</view>
-      <view class="profile-status status-{{(kyc.status) || 'none'}}">
-        <block wx:if="{{kyc && kyc.status === 'approved'}}">✅ {{kycStatusLabel}}</block>
-        <block wx:elif="{{kyc && kyc.status === 'submitted'}}">⏳ {{kycStatusLabel}}</block>
-        <block wx:elif="{{kyc && kyc.status === 'rejected'}}">✕ {{kycStatusLabel}}</block>
-        <block wx:else>· {{kycStatusLabel}}</block>
-      </view>
+      <view class="profile-status status-{{(kyc.status) || 'none'}}">{{kycStatusLabel}}</view>
     </view>
   </block>
 

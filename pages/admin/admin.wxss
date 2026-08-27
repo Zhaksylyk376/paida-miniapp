@@ -93,5 +93,5 @@
   font-size: 28rpx;
   border-radius: 12rpx;
 }
-.action-btn.primary { background: #1a56db; color: #fff; }
+.action-btn.primary { background: var(--color-ink); color: #fff; }
 .action-btn.danger  { background: #fdecec; color: #d64545; }

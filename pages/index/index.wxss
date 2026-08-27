@@ -1,255 +1,227 @@
+/* ================================================================
+ *  Главная — сдержанный тёмно-навигационный акцент, никаких кислотных
+ *  градиентов, крупная типографика, много воздуха.
+ * ================================================================ */
+
 /* ============ HERO ============ */
 .hero {
-  background: linear-gradient(135deg, #1a56db 0%, #3b82f6 60%, #60a5fa 100%);
-  border-radius: 24rpx;
-  padding: 60rpx 40rpx 50rpx;
+  background: var(--color-ink);
+  border-radius: var(--r-lg);
+  padding: 52rpx 36rpx 44rpx;
   color: #fff;
   margin-bottom: 24rpx;
-  box-shadow: 0 8rpx 28rpx rgba(26, 86, 219, 0.25);
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-brand {
-  font-size: 30rpx;
-  font-weight: 700;
-  letter-spacing: 4rpx;
-  opacity: 0.85;
-  margin-bottom: 20rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  letter-spacing: 6rpx;
+  opacity: 0.55;
+  margin-bottom: 24rpx;
+  text-transform: uppercase;
 }
 
 .hero-title {
-  font-size: 52rpx;
-  font-weight: 800;
-  margin-bottom: 16rpx;
+  font-size: 46rpx;
+  font-weight: 700;
+  margin-bottom: 14rpx;
   line-height: 1.2;
+  letter-spacing: -0.4rpx;
 }
 
 .hero-subtitle {
-  font-size: 28rpx;
-  opacity: 0.92;
-  margin-bottom: 40rpx;
-  line-height: 1.55;
+  font-size: 26rpx;
+  opacity: 0.7;
+  margin-bottom: 36rpx;
+  line-height: 1.6;
+  max-width: 560rpx;
 }
 
 .hero-subtitle.mono {
-  font-family: monospace;
-  letter-spacing: 1rpx;
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  letter-spacing: 0.5rpx;
 }
 
 .hero-actions {
   display: flex;
-  gap: 20rpx;
+  gap: 14rpx;
 }
 
 .hero-btn {
   flex: 1;
-  font-size: 28rpx !important;
-  padding: 22rpx 0 !important;
+  font-size: 26rpx !important;
+  padding: 20rpx 0 !important;
 }
 
 .hero-actions .btn-primary {
   background: #fff;
-  color: #1a56db;
+  color: var(--color-ink);
 }
 
 .hero-actions .btn-secondary {
   background: transparent;
   color: #fff;
-  border-color: #fff;
+  border-color: rgba(255,255,255,0.25);
 }
 
-/* Driver hero */
-.driver-hero { text-align: center; padding: 50rpx 30rpx 40rpx; }
-.driver-badge { font-size: 90rpx; margin-bottom: 14rpx; }
+/* Driver hero — минимализм, без гигантского эмодзи */
+.driver-hero { padding: 44rpx 36rpx 40rpx; }
+.driver-badge { display: none; }
 
 /* ============ STATS STRIP ============ */
 .stats-strip {
   display: flex;
   align-items: center;
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 28rpx 20rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  background: var(--color-surface);
+  border-radius: var(--r-md);
+  padding: 26rpx 12rpx;
+  margin-bottom: 32rpx;
+  box-shadow: var(--shadow-1);
 }
 
-.stats-item {
-  flex: 1;
-  text-align: center;
-}
+.stats-item { flex: 1; text-align: center; }
 
 .stats-val {
-  font-size: 40rpx;
-  font-weight: 800;
-  color: #1a56db;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--color-ink);
   line-height: 1;
-  margin-bottom: 6rpx;
+  margin-bottom: 8rpx;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3rpx;
 }
 
 .stats-label {
   font-size: 22rpx;
-  color: #666;
+  color: var(--color-text-3);
+  letter-spacing: 0.3rpx;
 }
 
 .stats-divider {
-  width: 2rpx;
-  height: 50rpx;
-  background: #e5e7eb;
+  width: 1rpx;
+  height: 44rpx;
+  background: var(--color-border);
 }
 
 /* ============ SECTIONS ============ */
-.section { margin-bottom: 36rpx; }
+.section { margin-bottom: 40rpx; }
 
 .section-title {
-  font-size: 36rpx;
+  font-size: 32rpx;
   font-weight: 700;
-  margin-bottom: 8rpx;
-  color: #111;
-  padding-left: 8rpx;
+  margin-bottom: 6rpx;
+  color: var(--color-ink);
+  padding-left: 4rpx;
+  letter-spacing: -0.3rpx;
 }
 
 .section-subtitle {
   font-size: 24rpx;
-  color: #666;
-  margin-bottom: 24rpx;
-  padding-left: 8rpx;
+  color: var(--color-text-3);
+  margin-bottom: 20rpx;
+  padding-left: 4rpx;
 }
 
 /* ============ HOW IT WORKS ============ */
 .how-grid {
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 10rpx 30rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  background: var(--color-surface);
+  border-radius: var(--r-md);
+  padding: 6rpx 28rpx;
+  box-shadow: var(--shadow-1);
 }
 
 .how-step {
   display: flex;
   align-items: flex-start;
-  padding: 28rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
+  padding: 26rpx 0;
+  border-bottom: 1rpx solid var(--color-border);
 }
-
 .how-step:last-child { border-bottom: none; }
 
 .how-step-num {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 16rpx;
-  background: linear-gradient(135deg, #1a56db, #3b82f6);
-  color: #fff;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: var(--r-pill);
+  background: var(--color-primary-t);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
-  font-weight: 800;
-  margin-right: 24rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  margin-right: 20rpx;
   flex-shrink: 0;
+  margin-top: 2rpx;
 }
 
 .how-step-body { flex: 1; }
 
 .how-step-title {
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 600;
   margin-bottom: 6rpx;
-  color: #111;
+  color: var(--color-ink);
 }
 
 .how-step-desc {
   font-size: 25rpx;
-  color: #555;
-  line-height: 1.55;
-}
-
-/* ============ CLIENTS ============ */
-.clients {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-
-.client-item {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 30rpx 24rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-}
-
-.client-icon {
-  font-size: 64rpx;
-  margin-right: 24rpx;
-  width: 80rpx;
-  text-align: center;
-}
-
-.client-content { flex: 1; }
-
-.client-name {
-  font-size: 32rpx;
-  font-weight: 600;
-  margin-bottom: 6rpx;
-  color: #111;
-}
-
-.client-desc {
-  font-size: 25rpx;
-  color: #666;
+  color: var(--color-text-2);
   line-height: 1.55;
 }
 
 /* ============ ADVANTAGES ============ */
 .advantages {
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 10rpx 30rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  background: var(--color-surface);
+  border-radius: var(--r-md);
+  padding: 6rpx 28rpx;
+  box-shadow: var(--shadow-1);
 }
 
 .adv-item {
   display: flex;
   align-items: flex-start;
-  padding: 26rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--color-border);
 }
-
 .adv-item:last-child { border-bottom: none; }
 
 .adv-num {
-  width: 52rpx;
-  height: 52rpx;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1a56db, #3b82f6);
-  color: #fff;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: var(--r-pill);
+  background: var(--color-primary-t);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 28rpx;
-  margin-right: 20rpx;
+  font-size: 22rpx;
+  margin-right: 18rpx;
   flex-shrink: 0;
+  margin-top: 2rpx;
 }
 
 .adv-content { flex: 1; }
 
 .adv-title {
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 600;
-  margin-bottom: 6rpx;
-  color: #111;
+  margin-bottom: 4rpx;
+  color: var(--color-ink);
 }
 
 .adv-desc {
   font-size: 25rpx;
-  color: #555;
+  color: var(--color-text-2);
   line-height: 1.55;
 }
 
 /* ============ FOOTER ============ */
 .footer {
   text-align: center;
-  color: #999;
+  color: var(--color-text-3);
   font-size: 22rpx;
   padding: 30rpx 20rpx 10rpx;
   line-height: 1.5;
@@ -263,62 +235,66 @@
 }
 
 .cta-icon {
-  font-size: 80rpx;
-  margin-bottom: 16rpx;
+  font-size: 44rpx;
+  margin-bottom: 14rpx;
+  opacity: 0.6;
 }
 
 .cta-title {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 600;
-  margin-bottom: 14rpx;
-  color: #111;
+  margin-bottom: 10rpx;
+  color: var(--color-ink);
 }
 
 .cta-desc {
   font-size: 26rpx;
-  color: #666;
+  color: var(--color-text-2);
   line-height: 1.6;
-  margin-bottom: 30rpx;
+  margin-bottom: 26rpx;
 }
 
 .stats-grid {
   display: flex;
-  gap: 20rpx;
-  margin-bottom: 30rpx;
+  gap: 14rpx;
+  margin-bottom: 24rpx;
 }
 
 .stat-card {
   flex: 1;
-  background: #fff;
-  border-radius: 16rpx;
+  background: var(--color-surface);
+  border-radius: var(--r-md);
   padding: 32rpx 20rpx;
   text-align: center;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-1);
 }
 
 .stat-num {
-  font-size: 56rpx;
+  font-size: 52rpx;
   font-weight: 700;
-  color: #1a56db;
+  color: var(--color-ink);
   line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5rpx;
 }
 
 .stat-label {
-  font-size: 24rpx;
-  color: #666;
+  font-size: 22rpx;
+  color: var(--color-text-3);
   margin-top: 8rpx;
+  letter-spacing: 0.3rpx;
 }
 
 .quick-actions {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 12rpx;
   margin-bottom: 20rpx;
 }
 
 .hint {
   text-align: center;
-  color: #888;
+  color: var(--color-text-3);
   font-size: 24rpx;
   padding: 10rpx 20rpx;
   line-height: 1.5;
@@ -327,6 +303,7 @@
 /* Вход в админ-панель */
 .admin-entry {
   text-align: center;
-  border: 2rpx solid #eaf0fe;
+  border: 1rpx solid var(--color-border);
+  box-shadow: none;
 }
-.admin-entry .cta-icon { font-size: 56rpx; }
+.admin-entry .cta-icon { font-size: 36rpx; }

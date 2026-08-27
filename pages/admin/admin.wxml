@@ -2,7 +2,6 @@
 
   <block wx:if="{{!isAdmin}}">
     <view class="card empty">
-      <view class="empty-icon">🔒</view>
       <view class="empty-text">Только для админа</view>
     </view>
   </block>
@@ -16,14 +15,13 @@
 
     <block wx:if="{{!loading && drivers.length === 0}}">
       <view class="card empty">
-        <view class="empty-icon">📭</view>
         <view class="empty-text">{{t.admin_empty}}</view>
       </view>
     </block>
 
     <view class="driver-card" wx:for="{{drivers}}" wx:key="openid">
       <view class="driver-top">
-        <view class="driver-name">🚛 {{item.fullname}}</view>
+        <view class="driver-name">{{item.fullname}}</view>
         <view class="driver-rating status-{{item.status}}">{{t['drv_status_' + item.status]}}</view>
       </view>
 

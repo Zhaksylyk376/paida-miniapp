@@ -29,10 +29,7 @@ const VOLUME_TO_KG = 250
 const BORDER_FEE = 70
 
 // --- Пункты пропуска на границе КНР ↔ ЦА ---
-// coords: WGS84 (lat, lng) для отображения на карте
-// avgQueueHours: усреднённое время очереди на прохождение таможни
-//   (по оперативным данным центрально-азиатских экспедиторов 2026 г.)
-// country: страна назначения, к которой относится пункт
+// coords: WGS84 (lat, lng) — реальные координаты пунктов, для отображения на карте
 // throughCountries: страны СНГ, куда попадают через этот пункт
 const BORDER_CROSSINGS = [
   {
@@ -40,7 +37,6 @@ const BORDER_CROSSINGS = [
     nameRu: 'Хоргос (СУАР — Алматинская обл.)',
     nameZh: '霍尔果斯口岸 (新疆 — 阿拉木图州)',
     coords: { lat: 44.2135, lng: 80.4136 },
-    avgQueueHours: 8,
     throughCountries: ['KZ', 'KG', 'UZ', 'TJ']
   },
   {
@@ -48,7 +44,6 @@ const BORDER_CROSSINGS = [
     nameRu: 'Алашанькоу — Достык',
     nameZh: '阿拉山口 — 多斯特克',
     coords: { lat: 45.1793, lng: 82.5647 },
-    avgQueueHours: 6,
     throughCountries: ['KZ', 'RU']
   },
   {
@@ -56,7 +51,6 @@ const BORDER_CROSSINGS = [
     nameRu: 'Бахты — Байкурты',
     nameZh: '巴克图 — 拜克尔特',
     coords: { lat: 46.6800, lng: 82.9000 },
-    avgQueueHours: 10,
     throughCountries: ['KZ', 'RU']
   },
   {
@@ -64,7 +58,6 @@ const BORDER_CROSSINGS = [
     nameRu: 'Торугарт (СУАР — Нарын)',
     nameZh: '吐尔尕特口岸 (新疆 — 纳伦州)',
     coords: { lat: 40.6000, lng: 75.4000 },
-    avgQueueHours: 12,
     throughCountries: ['KG', 'UZ']
   },
   {
@@ -72,36 +65,9 @@ const BORDER_CROSSINGS = [
     nameRu: 'Иркештам (СУАР — Ош)',
     nameZh: '伊尔克什坦口岸 (新疆 — 奥什)',
     coords: { lat: 39.6900, lng: 74.8500 },
-    avgQueueHours: 10,
     throughCountries: ['KG', 'UZ', 'TJ']
   }
 ]
-
-// Приблизительные расстояния (км) от популярных китайских городов
-// до пункта пропуска — для оценки времени в пути. Ключи в нижнем регистре,
-// поддерживаем rus/eng/пиньинь варианты через нормализацию.
-const CITY_TO_BORDER_KM = {
-  'urumqi':    { KHORGOS: 620,  ALASHANKOU: 460, BAKHTY: 700, TORUGART: 1400, IRKESHTAM: 1500 },
-  '乌鲁木齐':   { KHORGOS: 620,  ALASHANKOU: 460, BAKHTY: 700, TORUGART: 1400, IRKESHTAM: 1500 },
-  'yiwu':      { KHORGOS: 4500, ALASHANKOU: 4400, BAKHTY: 4600, TORUGART: 5100, IRKESHTAM: 5200 },
-  '义乌':       { KHORGOS: 4500, ALASHANKOU: 4400, BAKHTY: 4600, TORUGART: 5100, IRKESHTAM: 5200 },
-  'guangzhou': { KHORGOS: 5200, ALASHANKOU: 5100, BAKHTY: 5300, TORUGART: 5700, IRKESHTAM: 5800 },
-  '广州':       { KHORGOS: 5200, ALASHANKOU: 5100, BAKHTY: 5300, TORUGART: 5700, IRKESHTAM: 5800 },
-  'kashgar':   { KHORGOS: 1600, ALASHANKOU: 1500, BAKHTY: 1700, TORUGART: 200,  IRKESHTAM: 260 },
-  '喀什':       { KHORGOS: 1600, ALASHANKOU: 1500, BAKHTY: 1700, TORUGART: 200,  IRKESHTAM: 260 }
-}
-
-// Расстояние (км) от пункта пропуска до города назначения (по СНГ)
-const BORDER_TO_CITY_KM = {
-  KHORGOS:    { 'almaty': 380, 'алматы': 380, 'astana': 1600, 'астана': 1600, 'bishkek': 800, 'бишкек': 800, 'tashkent': 1400, 'ташкент': 1400 },
-  ALASHANKOU: { 'almaty': 550, 'алматы': 550, 'astana': 1400, 'астана': 1400, 'moscow': 4300, 'москва': 4300 },
-  BAKHTY:     { 'almaty': 800, 'алматы': 800, 'astana': 950,  'астана': 950,  'semey': 200,   'семей': 200 },
-  TORUGART:   { 'bishkek': 550, 'бишкек': 550, 'osh': 800, 'ош': 800 },
-  IRKESHTAM:  { 'osh': 260,     'ош': 260,     'bishkek': 900, 'бишкек': 900, 'tashkent': 700, 'ташкент': 700 }
-}
-
-// Дальность в километрах, которую грузовик проходит за сутки
-const KM_PER_DAY = 550
 
 module.exports = {
   BRAND,
@@ -112,8 +78,5 @@ module.exports = {
   COUNTRIES_ORDER,
   VOLUME_TO_KG,
   BORDER_FEE,
-  BORDER_CROSSINGS,
-  CITY_TO_BORDER_KM,
-  BORDER_TO_CITY_KM,
-  KM_PER_DAY
+  BORDER_CROSSINGS
 }

@@ -1,5 +1,5 @@
 .contract-header {
-  background: linear-gradient(135deg, #1a56db 0%, #3b82f6 100%);
+  background: var(--color-ink);
   color: #fff;
   border-radius: 16rpx;
   padding: 30rpx;
@@ -80,7 +80,7 @@
   word-break: break-all;
 }
 .info-value.mono { font-family: monospace; letter-spacing: 1rpx; }
-.info-value.big { font-size: 32rpx; font-weight: 700; color: #1a56db; }
+.info-value.big { font-size: 32rpx; font-weight: 700; color: var(--color-ink); }
 
 .status-badge {
   padding: 8rpx 20rpx;
@@ -104,7 +104,7 @@
 .action-btn {
   flex: 1;
   background: #f5f7fa;
-  color: #1a56db;
+  color: var(--color-ink);
   border-radius: 100rpx;
   font-size: 25rpx;
   padding: 18rpx 0;
@@ -115,7 +115,7 @@
 .action-btn::after { border: none; }
 
 .action-btn.primary {
-  background: linear-gradient(135deg, #1a56db, #3b82f6);
+  background: var(--color-ink);
   color: #fff;
 }
 
@@ -168,8 +168,8 @@
 }
 
 .tl-dot.active {
-  background: #1a56db;
-  box-shadow: 0 0 0 2rpx #1a56db;
+  background: var(--color-ink);
+  box-shadow: 0 0 0 2rpx var(--color-ink);
 }
 
 .tl-status {
@@ -209,7 +209,7 @@
 .party-role {
   font-size: 24rpx;
   font-weight: 600;
-  color: #1a56db;
+  color: var(--color-ink);
   text-transform: uppercase;
   letter-spacing: 1rpx;
   margin-bottom: 10rpx;

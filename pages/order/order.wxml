@@ -28,7 +28,6 @@
       </block>
       <block wx:else>
         <view class="price-empty">
-          <view class="price-empty-icon">💰</view>
           <view class="price-empty-text">{{t.calc_price_hint}}</view>
         </view>
       </block>
@@ -68,8 +67,8 @@
         <input class="form-input" placeholder="{{t.order_to_ph}}" value="{{form.toCity}}" bindinput="onInput" data-field="toCity" />
       </view>
 
-      <!-- Карта: пункт пропуска + разбивка ETA -->
-      <view class="route-card" wx:if="{{route}}">
+      <!-- Карта: только маркер пункта пропуска -->
+      <view class="route-card" wx:if="{{showMap}}">
         <map class="route-map"
              latitude="{{mapCenter.lat}}"
              longitude="{{mapCenter.lng}}"
@@ -78,25 +77,6 @@
              show-location="{{false}}"
              enable-zoom="{{true}}"
              enable-scroll="{{true}}"></map>
-        <view class="route-legend">
-          <view class="route-row">
-            <text class="route-label">{{t.order_queue}}</text>
-            <text class="route-value">≈ {{route.queueHours}} {{t.order_hours}}</text>
-          </view>
-          <view class="route-row" wx:if="{{route.totalKm}}">
-            <text class="route-label">{{t.order_distance}}</text>
-            <text class="route-value">≈ {{route.totalKm}} {{t.order_km}}</text>
-          </view>
-          <view class="route-row" wx:if="{{route.driveDays}}">
-            <text class="route-label">{{t.order_drive_days}}</text>
-            <text class="route-value">≈ {{route.driveDays}} {{t.calc_days_unit}}</text>
-          </view>
-          <view class="route-row eta" wx:if="{{route.etaDays}}">
-            <text class="route-label">{{t.order_eta_total}}</text>
-            <text class="route-value strong">≈ {{route.etaDays}} {{t.calc_days_unit}}</text>
-          </view>
-          <view class="route-hint" wx:if="{{!route.known}}">{{t.order_route_partial}}</view>
-        </view>
       </view>
 
       <view class="form-row">
@@ -146,16 +126,16 @@
           <view class="load-number">{{item.number}}</view>
           <view class="load-status status-{{item.status}}">{{item.statusLabel}}</view>
         </view>
-        <view class="load-route">🛣 {{item.route}}</view>
-        <view class="load-meta" wx:if="{{item.price}}">💰 $ {{item.price}}</view>
+        <view class="load-route">{{item.route}}</view>
+        <view class="load-meta" wx:if="{{item.price}}">$ {{item.price}}</view>
 
         <view class="load-actions">
           <block wx:if="{{item.hasDriver}}">
-            <button class="status-btn ghost" catchtap="openMyOrder" data-id="{{item.id}}" data-hasdriver="{{true}}">📄 {{t.order_open_contract}}</button>
+            <button class="status-btn ghost" catchtap="openMyOrder" data-id="{{item.id}}" data-hasdriver="{{true}}">{{t.order_open_contract}}</button>
           </block>
           <block wx:else>
             <button class="status-btn primary" catchtap="openMyOrder" data-id="{{item.id}}" data-hasdriver="{{false}}">
-              👥 {{item.appsCount}} {{t.order_apps_count}} · {{t.order_view_apps}}
+              {{item.appsCount}} {{t.order_apps_count}} · {{t.order_view_apps}}
             </button>
           </block>
         </view>
@@ -187,13 +167,13 @@
           <view class="load-number">{{item.number}}</view>
           <view class="load-status status-{{item.status}}">{{item.statusLabel}}</view>
         </view>
-        <view class="load-route" bindtap="openContract" data-id="{{item.id}}">🛣 {{item.route}}</view>
-        <view class="load-meta" wx:if="{{item.client}}">👤 {{item.client}}</view>
-        <view class="load-meta" wx:if="{{item.price}}">💰 $ {{item.price}}</view>
-        <view class="load-meta muted" wx:if="{{item.note}}">📝 {{item.note}}</view>
+        <view class="load-route" bindtap="openContract" data-id="{{item.id}}">{{item.route}}</view>
+        <view class="load-meta" wx:if="{{item.client}}">{{item.client}}</view>
+        <view class="load-meta" wx:if="{{item.price}}">$ {{item.price}}</view>
+        <view class="load-meta muted" wx:if="{{item.note}}">{{item.note}}</view>
 
         <view class="load-actions">
-          <button class="status-btn ghost" bindtap="openContract" data-id="{{item.id}}">📄 {{t.my_loads_open}}</button>
+          <button class="status-btn ghost" bindtap="openContract" data-id="{{item.id}}">{{t.my_loads_open}}</button>
         </view>
       </view>
     </block>

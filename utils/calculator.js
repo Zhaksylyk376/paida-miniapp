@@ -18,43 +18,12 @@ function getBorderCrossings(countryCode, lang) {
     .map(b => ({
       code: b.code,
       name: lang === 'ru' ? b.nameRu : b.nameZh,
-      coords: b.coords,
-      avgQueueHours: b.avgQueueHours
+      coords: b.coords
     }))
 }
 
-// Нормализация названия города: нижний регистр, обрезаем пробелы
-function _normCity(s) {
-  return String(s || '').trim().toLowerCase()
-}
-
-// Оценка маршрута: км + часы в пути + часы в очереди на таможне.
-// Если данных о городе нет — возвращаем только очередь и километраж
-// от границы (если указан).
-function estimateRoute({ fromCity, toCity, borderCode }) {
-  const border = config.BORDER_CROSSINGS.find(b => b.code === borderCode)
-  if (!border) return null
-
-  const fromKm = (config.CITY_TO_BORDER_KM[_normCity(fromCity)] || {})[borderCode]
-  const toKm   = (config.BORDER_TO_CITY_KM[borderCode] || {})[_normCity(toCity)]
-
-  const totalKm = (fromKm || 0) + (toKm || 0)
-  const driveDays = totalKm > 0 ? Math.ceil(totalKm / config.KM_PER_DAY) : null
-  const queueDays = Math.ceil(border.avgQueueHours / 24)
-  const etaDays = driveDays !== null ? driveDays + queueDays : null
-
-  return {
-    borderCode: border.code,
-    borderCoords: border.coords,
-    queueHours: border.avgQueueHours,
-    queueDays,
-    fromKm: fromKm || null,
-    toKm: toKm || null,
-    totalKm: totalKm || null,
-    driveDays,
-    etaDays,
-    known: !!(fromKm && toKm)
-  }
+function getBorderByCode(code) {
+  return config.BORDER_CROSSINGS.find(b => b.code === code) || null
 }
 
 // Возвращает { chargeableKg, base, borderFee, total, currency, days, pricePerKg }
@@ -92,4 +61,4 @@ function formatMoney(amount, currency) {
   return `${cur} ${withCommas}`
 }
 
-module.exports = { calcPrice, getCountriesList, getBorderCrossings, estimateRoute, formatMoney }
+module.exports = { calcPrice, getCountriesList, getBorderCrossings, getBorderByCode, formatMoney }

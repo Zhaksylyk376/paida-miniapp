@@ -22,9 +22,9 @@ Page({
     },
     price: null,
     priceFormatted: '',
-    route: null,
     mapMarkers: [],
     mapCenter: { lat: 43.25, lng: 76.9 },
+    showMap: false,
     loading: false,
     // client — мои заказы
     myOrders: [],
@@ -73,7 +73,7 @@ Page({
       'form.borderName': borderName
     })
     wx.setNavigationBarTitle({ title: role === 'driver' ? t.nav_my_loads : t.nav_order })
-    if (role === 'client') { this.recalc(); this.recalcRoute() }
+    if (role === 'client') { this.recalc(); this.refreshBorderMap() }
   },
 
   // =================== CLIENT: форма ===================
@@ -81,7 +81,6 @@ Page({
     const field = e.currentTarget.dataset.field
     this.setData({ [`form.${field}`]: e.detail.value })
     if (field === 'weight' || field === 'volume') this.recalc()
-    if (field === 'fromCity' || field === 'toCity') this.recalcRoute()
   },
 
   onCountryChange(e) {
@@ -98,7 +97,7 @@ Page({
       'form.borderName': ''
     })
     this.recalc()
-    this.recalcRoute()
+    this.refreshBorderMap()
   },
 
   onBorderChange(e) {
@@ -109,32 +108,30 @@ Page({
       'form.borderCode': border.code,
       'form.borderName': border.name
     })
-    this.recalcRoute()
+    this.refreshBorderMap()
   },
 
-  recalcRoute() {
-    const { fromCity, toCity, borderCode } = this.data.form
-    if (!borderCode) {
-      this.setData({ route: null, mapMarkers: [] })
+  refreshBorderMap() {
+    const code = this.data.form.borderCode
+    if (!code) {
+      this.setData({ showMap: false, mapMarkers: [] })
       return
     }
-    const route = calc.estimateRoute({ fromCity, toCity, borderCode })
-    if (!route) {
-      this.setData({ route: null, mapMarkers: [] })
+    const border = calc.getBorderByCode(code)
+    if (!border) {
+      this.setData({ showMap: false, mapMarkers: [] })
       return
-    }
-    const marker = {
-      id: 1,
-      latitude: route.borderCoords.lat,
-      longitude: route.borderCoords.lng,
-      iconPath: '',
-      width: 30, height: 30,
-      title: this.data.form.borderName || 'Border'
     }
     this.setData({
-      route,
-      mapMarkers: [marker],
-      mapCenter: { lat: route.borderCoords.lat, lng: route.borderCoords.lng }
+      showMap: true,
+      mapMarkers: [{
+        id: 1,
+        latitude: border.coords.lat,
+        longitude: border.coords.lng,
+        width: 28, height: 28,
+        title: this.data.form.borderName || ''
+      }],
+      mapCenter: { lat: border.coords.lat, lng: border.coords.lng }
     })
   },
 
@@ -163,10 +160,7 @@ Page({
 
     this.setData({ loading: true })
     try {
-      const payload = Object.assign({}, this.data.form, {
-        price: this.data.price,
-        route: this.data.route
-      })
+      const payload = Object.assign({}, this.data.form, { price: this.data.price })
       const res = await api.orderCreate(payload)
       this.setData({ loading: false })
       this._resetForm()
@@ -194,7 +188,7 @@ Page({
         name: '', phone: '', wechat: '', note: ''
       },
       price: null, priceFormatted: '',
-      route: null, mapMarkers: [],
+      mapMarkers: [], showMap: false,
       selectedCountryIndex: 0, selectedBorderIndex: -1
     })
   },

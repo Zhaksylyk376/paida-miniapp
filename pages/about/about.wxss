@@ -1,5 +1,5 @@
 .hero-mini {
-  background: linear-gradient(135deg, #1a56db 0%, #3b82f6 100%);
+  background: var(--color-ink);
   color: #fff;
   padding: 40rpx 30rpx;
   border-radius: 20rpx;
@@ -52,7 +52,7 @@
 }
 
 .switcher-tab.active {
-  background: #1a56db;
+  background: var(--color-ink);
   color: #fff;
   font-weight: 500;
 }

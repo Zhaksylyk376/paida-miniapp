@@ -79,7 +79,6 @@
 
     <block wx:if="{{!profile}}">
       <view class="card cta-registration">
-        <view class="cta-icon">📝</view>
         <view class="cta-title">{{t.d_home_notregistered_title}}</view>
         <view class="cta-desc">{{t.d_home_notregistered_desc}}</view>
         <button class="btn-primary" bindtap="goToRegister">{{t.d_home_register}}</button>
@@ -88,7 +87,6 @@
 
     <block wx:elif="{{profile.status === 'pending'}}">
       <view class="card status-pending">
-        <view class="cta-icon">⏳</view>
         <view class="cta-title">{{t.d_home_pending_title}}</view>
         <view class="cta-desc">{{t.d_home_pending_desc}}</view>
       </view>
@@ -111,8 +109,8 @@
       </view>
 
       <view class="quick-actions">
-        <button class="btn-primary" bindtap="goToAvailable">📋 {{t.d_home_quick_available}}</button>
-        <button class="btn-secondary" bindtap="goToMyLoads">📋 {{t.d_home_quick_view}}</button>
+        <button class="btn-primary" bindtap="goToAvailable">{{t.d_home_quick_available}}</button>
+        <button class="btn-secondary" bindtap="goToMyLoads">{{t.d_home_quick_view}}</button>
       </view>
 
       <view class="hint">{{t.d_home_approved_hint}}</view>
@@ -123,9 +121,8 @@
 
   <!-- ADMIN ENTRY (только для админов) -->
   <view wx:if="{{isAdmin}}" class="card admin-entry" bindtap="goToAdmin">
-    <view class="cta-icon">🛡️</view>
     <view class="cta-title">{{t.admin_open_admin}}</view>
-    <view class="cta-desc" wx:if="{{pendingBadge > 0}}">{{t.admin_tab_pending}}: {{pendingBadge}}</view>
+    <view class="cta-desc" wx:if="{{pendingBadge > 0}}">{{t.admin_tab_pending}} · {{pendingBadge}}</view>
   </view>
 
 </view>

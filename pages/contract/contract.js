@@ -107,7 +107,6 @@ Page({
     const dest = [o.countryName, o.toCity].filter(Boolean).join(', ')
     const route = [o.fromCity, o.borderName ? '· ' + o.borderName + ' ·' : '', dest]
                     .filter(Boolean).join(' → ')
-    const r = o.route || {}
     return {
       id: o._id,
       number: o.number,
@@ -115,8 +114,6 @@ Page({
       createdAt: o.createdAt,
       route,
       borderName: o.borderName || '',
-      totalKm: r.totalKm || '',
-      etaDays: r.etaDays || '',
       client: [o.name, o.phone].filter(Boolean).join(' · '),
       clientWechat: o.wechat || '',
       goodsType: o.goodsType || '',

@@ -1,72 +1,63 @@
-/* Sticky price card (client) */
+/* Sticky price card (client) — тёмный контраст, никаких кислотных градиентов */
 .price-card {
-  background: linear-gradient(135deg, #1a56db 0%, #3b82f6 100%);
+  background: var(--color-ink);
   color: #fff;
-  border-radius: 16rpx;
-  padding: 30rpx;
-  margin-bottom: 24rpx;
+  border-radius: var(--r-md);
+  padding: 28rpx;
+  margin-bottom: 20rpx;
   position: sticky;
   top: 0;
   z-index: 10;
-  box-shadow: 0 4rpx 20rpx rgba(26, 86, 219, 0.25);
 }
 
-.price-empty {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-}
-
-.price-empty-icon { font-size: 48rpx; }
-
+.price-empty { padding: 4rpx 0; }
 .price-empty-text {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 26rpx;
-  flex: 1;
-  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 25rpx;
+  line-height: 1.5;
 }
 
 .price-label {
-  font-size: 24rpx;
-  opacity: 0.85;
-  margin-bottom: 4rpx;
+  font-size: 22rpx;
+  opacity: 0.55;
+  margin-bottom: 6rpx;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 .price-main {
-  font-size: 52rpx;
+  font-size: 48rpx;
   font-weight: 700;
-  letter-spacing: 1rpx;
+  letter-spacing: -0.5rpx;
   margin-bottom: 16rpx;
+  font-variant-numeric: tabular-nums;
 }
 
 .price-breakdown {
-  border-top: 1rpx solid rgba(255, 255, 255, 0.2);
-  padding-top: 14rpx;
-  margin-bottom: 12rpx;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.12);
+  padding-top: 12rpx;
+  margin-bottom: 10rpx;
 }
 
 .price-row {
   display: flex;
   justify-content: space-between;
-  font-size: 24rpx;
+  font-size: 23rpx;
   padding: 4rpx 0;
-}
-
-.price-row.muted {
   opacity: 0.85;
-  font-size: 22rpx;
 }
+.price-row.muted { opacity: 0.6; }
 
 .price-disclaimer {
   font-size: 20rpx;
-  opacity: 0.75;
-  line-height: 1.4;
+  opacity: 0.5;
+  line-height: 1.5;
 }
 
 /* Form (client) */
 .form-item { margin-bottom: 28rpx; }
 
-/* Border / route preview */
+/* Map preview: border marker only */
 .route-card {
   margin: 8rpx 0 28rpx;
   border-radius: 14rpx;
@@ -77,31 +68,6 @@
 .route-map {
   width: 100%;
   height: 320rpx;
-}
-.route-legend {
-  padding: 18rpx 22rpx;
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
-}
-.route-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 26rpx;
-  color: #374151;
-}
-.route-row.eta {
-  margin-top: 8rpx;
-  padding-top: 12rpx;
-  border-top: 1rpx dashed #e5e7eb;
-}
-.route-label { color: #6b7280; }
-.route-value.strong { font-weight: 700; color: #1a56db; }
-.route-hint {
-  font-size: 22rpx;
-  color: #9ca3af;
-  margin-top: 8rpx;
-  line-height: 1.4;
 }
 
 .label {
@@ -151,7 +117,7 @@
   transition: all 0.2s;
 }
 .method-tab.active {
-  background: #1a56db;
+  background: var(--color-ink);
   color: #fff;
   font-weight: 500;
 }
@@ -176,8 +142,8 @@
   transition: all 0.15s;
 }
 .checkbox.checked {
-  background: #1a56db;
-  border-color: #1a56db;
+  background: var(--color-ink);
+  border-color: var(--color-ink);
 }
 .checkbox-label {
   font-size: 28rpx;
@@ -206,7 +172,7 @@
 }
 
 .filter-tab.active {
-  background: #1a56db;
+  background: var(--color-ink);
   color: #fff;
   font-weight: 500;
 }
@@ -290,7 +256,7 @@
 .status-btn {
   flex: 1;
   min-width: 45%;
-  background: linear-gradient(135deg, #1a56db, #3b82f6);
+  background: var(--color-ink);
   color: #fff;
   border-radius: 100rpx;
   padding: 16rpx 0;
@@ -301,7 +267,7 @@
 
 .status-btn.ghost {
   background: #f5f7fa;
-  color: #1a56db;
+  color: var(--color-ink);
 }
 
 .status-btn::after { border: none; }

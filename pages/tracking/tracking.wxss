@@ -12,7 +12,7 @@
   top: 30rpx;
   bottom: 30rpx;
   width: 4rpx;
-  background: linear-gradient(180deg, #1a56db 0%, #60a5fa 100%);
+  background: var(--color-ink);
   border-radius: 2rpx;
 }
 
@@ -33,7 +33,7 @@
   width: 60rpx;
   height: 60rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1a56db, #3b82f6);
+  background: var(--color-ink);
   display: flex;
   align-items: center;
   justify-content: center;
