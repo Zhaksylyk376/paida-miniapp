@@ -11,6 +11,52 @@ function getCountriesList(lang) {
   })
 }
 
+// Пункты пропуска, доступные для страны назначения
+function getBorderCrossings(countryCode, lang) {
+  return config.BORDER_CROSSINGS
+    .filter(b => !countryCode || b.throughCountries.indexOf(countryCode) !== -1)
+    .map(b => ({
+      code: b.code,
+      name: lang === 'ru' ? b.nameRu : b.nameZh,
+      coords: b.coords,
+      avgQueueHours: b.avgQueueHours
+    }))
+}
+
+// Нормализация названия города: нижний регистр, обрезаем пробелы
+function _normCity(s) {
+  return String(s || '').trim().toLowerCase()
+}
+
+// Оценка маршрута: км + часы в пути + часы в очереди на таможне.
+// Если данных о городе нет — возвращаем только очередь и километраж
+// от границы (если указан).
+function estimateRoute({ fromCity, toCity, borderCode }) {
+  const border = config.BORDER_CROSSINGS.find(b => b.code === borderCode)
+  if (!border) return null
+
+  const fromKm = (config.CITY_TO_BORDER_KM[_normCity(fromCity)] || {})[borderCode]
+  const toKm   = (config.BORDER_TO_CITY_KM[borderCode] || {})[_normCity(toCity)]
+
+  const totalKm = (fromKm || 0) + (toKm || 0)
+  const driveDays = totalKm > 0 ? Math.ceil(totalKm / config.KM_PER_DAY) : null
+  const queueDays = Math.ceil(border.avgQueueHours / 24)
+  const etaDays = driveDays !== null ? driveDays + queueDays : null
+
+  return {
+    borderCode: border.code,
+    borderCoords: border.coords,
+    queueHours: border.avgQueueHours,
+    queueDays,
+    fromKm: fromKm || null,
+    toKm: toKm || null,
+    totalKm: totalKm || null,
+    driveDays,
+    etaDays,
+    known: !!(fromKm && toKm)
+  }
+}
+
 // Возвращает { chargeableKg, base, borderFee, total, currency, days, pricePerKg }
 // Всё в USD. Если данных не хватает — null
 function calcPrice({ countryCode, weightKg, volumeM3 }) {
@@ -46,4 +92,4 @@ function formatMoney(amount, currency) {
   return `${cur} ${withCommas}`
 }
 
-module.exports = { calcPrice, getCountriesList, formatMoney }
+module.exports = { calcPrice, getCountriesList, getBorderCrossings, estimateRoute, formatMoney }

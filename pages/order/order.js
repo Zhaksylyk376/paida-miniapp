@@ -10,14 +10,21 @@ Page({
     // client — форма
     countries: [],
     selectedCountryIndex: 0,
+    borders: [],
+    selectedBorderIndex: -1,
     form: {
       fromCity: '',
-      countryCode: '', countryName: '', toCity: '',
+      countryCode: '', countryName: '',
+      borderCode: '', borderName: '',
+      toCity: '',
       goodsType: '', weight: '', volume: '',
       name: '', phone: '', wechat: '', note: ''
     },
     price: null,
     priceFormatted: '',
+    route: null,
+    mapMarkers: [],
+    mapCenter: { lat: 43.25, lng: 76.9 },
     loading: false,
     // client — мои заказы
     myOrders: [],
@@ -52,9 +59,21 @@ Page({
       countryName = found ? found.name : ''
     }
 
-    this.setData({ t, role, countries, 'form.countryName': countryName })
+    const borders = calc.getBorderCrossings(this.data.form.countryCode, lang)
+    let borderName = ''
+    let selectedBorderIndex = -1
+    if (this.data.form.borderCode) {
+      selectedBorderIndex = borders.findIndex(b => b.code === this.data.form.borderCode)
+      borderName = selectedBorderIndex >= 0 ? borders[selectedBorderIndex].name : ''
+    }
+
+    this.setData({
+      t, role, countries, borders, selectedBorderIndex,
+      'form.countryName': countryName,
+      'form.borderName': borderName
+    })
     wx.setNavigationBarTitle({ title: role === 'driver' ? t.nav_my_loads : t.nav_order })
-    if (role === 'client') this.recalc()
+    if (role === 'client') { this.recalc(); this.recalcRoute() }
   },
 
   // =================== CLIENT: форма ===================
@@ -62,17 +81,61 @@ Page({
     const field = e.currentTarget.dataset.field
     this.setData({ [`form.${field}`]: e.detail.value })
     if (field === 'weight' || field === 'volume') this.recalc()
+    if (field === 'fromCity' || field === 'toCity') this.recalcRoute()
   },
 
   onCountryChange(e) {
     const idx = Number(e.detail.value)
     const country = this.data.countries[idx]
+    const borders = calc.getBorderCrossings(country.code, i18n.getLang())
     this.setData({
       selectedCountryIndex: idx,
       'form.countryCode': country.code,
-      'form.countryName': country.name
+      'form.countryName': country.name,
+      borders,
+      selectedBorderIndex: -1,
+      'form.borderCode': '',
+      'form.borderName': ''
     })
     this.recalc()
+    this.recalcRoute()
+  },
+
+  onBorderChange(e) {
+    const idx = Number(e.detail.value)
+    const border = this.data.borders[idx]
+    this.setData({
+      selectedBorderIndex: idx,
+      'form.borderCode': border.code,
+      'form.borderName': border.name
+    })
+    this.recalcRoute()
+  },
+
+  recalcRoute() {
+    const { fromCity, toCity, borderCode } = this.data.form
+    if (!borderCode) {
+      this.setData({ route: null, mapMarkers: [] })
+      return
+    }
+    const route = calc.estimateRoute({ fromCity, toCity, borderCode })
+    if (!route) {
+      this.setData({ route: null, mapMarkers: [] })
+      return
+    }
+    const marker = {
+      id: 1,
+      latitude: route.borderCoords.lat,
+      longitude: route.borderCoords.lng,
+      iconPath: '',
+      width: 30, height: 30,
+      title: this.data.form.borderName || 'Border'
+    }
+    this.setData({
+      route,
+      mapMarkers: [marker],
+      mapCenter: { lat: route.borderCoords.lat, lng: route.borderCoords.lng }
+    })
   },
 
   recalc() {
@@ -100,7 +163,10 @@ Page({
 
     this.setData({ loading: true })
     try {
-      const payload = Object.assign({}, this.data.form, { price: this.data.price })
+      const payload = Object.assign({}, this.data.form, {
+        price: this.data.price,
+        route: this.data.route
+      })
       const res = await api.orderCreate(payload)
       this.setData({ loading: false })
       this._resetForm()
@@ -121,11 +187,15 @@ Page({
     this.setData({
       form: {
         fromCity: '',
-        countryCode: '', countryName: '', toCity: '',
+        countryCode: '', countryName: '',
+        borderCode: '', borderName: '',
+        toCity: '',
         goodsType: '', weight: '', volume: '',
         name: '', phone: '', wechat: '', note: ''
       },
-      price: null, priceFormatted: '', selectedCountryIndex: 0
+      price: null, priceFormatted: '',
+      route: null, mapMarkers: [],
+      selectedCountryIndex: 0, selectedBorderIndex: -1
     })
   },
 

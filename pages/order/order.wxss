@@ -66,6 +66,44 @@
 /* Form (client) */
 .form-item { margin-bottom: 28rpx; }
 
+/* Border / route preview */
+.route-card {
+  margin: 8rpx 0 28rpx;
+  border-radius: 14rpx;
+  overflow: hidden;
+  border: 1rpx solid #e5e7eb;
+  background: #fff;
+}
+.route-map {
+  width: 100%;
+  height: 320rpx;
+}
+.route-legend {
+  padding: 18rpx 22rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+.route-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 26rpx;
+  color: #374151;
+}
+.route-row.eta {
+  margin-top: 8rpx;
+  padding-top: 12rpx;
+  border-top: 1rpx dashed #e5e7eb;
+}
+.route-label { color: #6b7280; }
+.route-value.strong { font-weight: 700; color: #1a56db; }
+.route-hint {
+  font-size: 22rpx;
+  color: #9ca3af;
+  margin-top: 8rpx;
+  line-height: 1.4;
+}
+
 .label {
   font-size: 26rpx;
   color: #555;

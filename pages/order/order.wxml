@@ -53,9 +53,50 @@
         </picker>
       </view>
 
+      <view class="form-item" wx:if="{{borders.length > 0}}">
+        <view class="label">{{t.order_border}}</view>
+        <picker mode="selector" range="{{borders}}" range-key="name" value="{{selectedBorderIndex}}" bindchange="onBorderChange">
+          <view class="form-input picker-input {{form.borderCode ? '' : 'placeholder'}}">
+            {{form.borderName || t.order_border_ph}}
+            <text class="picker-arrow">▾</text>
+          </view>
+        </picker>
+      </view>
+
       <view class="form-item">
         <view class="label">{{t.order_to}}</view>
         <input class="form-input" placeholder="{{t.order_to_ph}}" value="{{form.toCity}}" bindinput="onInput" data-field="toCity" />
+      </view>
+
+      <!-- Карта: пункт пропуска + разбивка ETA -->
+      <view class="route-card" wx:if="{{route}}">
+        <map class="route-map"
+             latitude="{{mapCenter.lat}}"
+             longitude="{{mapCenter.lng}}"
+             markers="{{mapMarkers}}"
+             scale="6"
+             show-location="{{false}}"
+             enable-zoom="{{true}}"
+             enable-scroll="{{true}}"></map>
+        <view class="route-legend">
+          <view class="route-row">
+            <text class="route-label">{{t.order_queue}}</text>
+            <text class="route-value">≈ {{route.queueHours}} {{t.order_hours}}</text>
+          </view>
+          <view class="route-row" wx:if="{{route.totalKm}}">
+            <text class="route-label">{{t.order_distance}}</text>
+            <text class="route-value">≈ {{route.totalKm}} {{t.order_km}}</text>
+          </view>
+          <view class="route-row" wx:if="{{route.driveDays}}">
+            <text class="route-label">{{t.order_drive_days}}</text>
+            <text class="route-value">≈ {{route.driveDays}} {{t.calc_days_unit}}</text>
+          </view>
+          <view class="route-row eta" wx:if="{{route.etaDays}}">
+            <text class="route-label">{{t.order_eta_total}}</text>
+            <text class="route-value strong">≈ {{route.etaDays}} {{t.calc_days_unit}}</text>
+          </view>
+          <view class="route-hint" wx:if="{{!route.known}}">{{t.order_route_partial}}</view>
+        </view>
       </view>
 
       <view class="form-row">

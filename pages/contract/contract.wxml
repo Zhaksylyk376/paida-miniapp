@@ -39,6 +39,9 @@
     <view class="card">
       <view class="section-h">2. {{t.contract_section_subject}}</view>
       <view class="info-row"><text class="info-label">{{t.contract_subject_route}}</text><text class="info-value">{{load.route || '—'}}</text></view>
+      <view class="info-row" wx:if="{{load.borderName}}"><text class="info-label">{{t.order_border}}</text><text class="info-value">{{load.borderName}}</text></view>
+      <view class="info-row" wx:if="{{load.totalKm}}"><text class="info-label">{{t.order_distance}}</text><text class="info-value">≈ {{load.totalKm}} {{t.order_km}}</text></view>
+      <view class="info-row" wx:if="{{load.etaDays}}"><text class="info-label">{{t.order_eta_total}}</text><text class="info-value">≈ {{load.etaDays}} {{t.calc_days_unit}}</text></view>
       <view class="info-row" wx:if="{{load.goodsType}}"><text class="info-label">{{t.contract_cargo_type}}</text><text class="info-value">{{load.goodsType}}</text></view>
       <view class="info-row" wx:if="{{load.weight}}"><text class="info-label">{{t.contract_cargo_weight}}</text><text class="info-value">{{load.weight}} {{t.calc_kg}}</text></view>
       <view class="info-row" wx:if="{{load.volume}}"><text class="info-label">{{t.contract_cargo_volume}}</text><text class="info-value">{{load.volume}} m³</text></view>
