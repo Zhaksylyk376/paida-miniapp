@@ -1,80 +1,124 @@
 <view class="container">
 
   <block wx:if="{{load}}">
+
     <!-- Contract header -->
     <view class="contract-header">
       <view class="contract-brand">Paida</view>
-      <view class="contract-title">{{t.contract_title}}</view>
-      <view class="contract-meta">{{t.contract_generated}}: {{createdDate}}</view>
+      <view class="contract-title">{{t.contract_header_title}} № {{load.number}}</view>
+      <view class="contract-meta">{{t.contract_from_date}}: {{createdDate}}</view>
+      <view class="status-badge status-{{load.status}}">{{statusLabel}}</view>
     </view>
 
-    <!-- Load info -->
+    <!-- 1. Parties -->
     <view class="card">
-      <view class="row-between">
-        <view>
-          <view class="mini-label">{{t.contract_number}}</view>
-          <view class="mono big">{{load.number}}</view>
+      <view class="section-h">1. {{t.contract_section_parties}}</view>
+
+      <view class="party-block">
+        <view class="party-role">{{t.contract_party_client}}</view>
+        <view class="info-row" wx:if="{{load.client}}">
+          <text class="info-value">{{load.client}}</text>
         </view>
-        <view class="status-badge status-{{load.status}}">{{statusLabel}}</view>
       </view>
+
       <view class="divider"></view>
-      <view class="mini-label">{{t.contract_route}}</view>
-      <view class="value">{{load.route}}</view>
+
+      <view class="party-block">
+        <view class="party-role">{{t.contract_party_driver}}</view>
+        <block wx:if="{{driver}}">
+          <view class="info-row"><text class="info-label">{{t.d_reg_fullname}}</text><text class="info-value">{{driver.fullname}}</text></view>
+          <view class="info-row"><text class="info-label">{{t.d_reg_phone}}</text><text class="info-value mono">{{driver.phone}}</text></view>
+          <view class="info-row"><text class="info-label">{{t.d_reg_truck}}</text><text class="info-value">{{driver.truck}}</text></view>
+          <view class="info-row"><text class="info-label">{{t.d_reg_plate}}</text><text class="info-value mono">{{driver.plate}}</text></view>
+        </block>
+        <view class="hint-small" wx:if="{{!driver}}">{{t.contract_awaiting_driver}}</view>
+      </view>
     </view>
 
-    <!-- Client section -->
+    <!-- 2. Subject -->
     <view class="card">
-      <view class="section-h">👤 {{t.contract_client_section}}</view>
-      <view class="info-row" wx:if="{{load.client}}">
-        <text class="info-label">{{t.d_reg_fullname}}</text>
-        <text class="info-value">{{load.client}}</text>
-      </view>
-      <view class="info-row" wx:if="{{load.clientWechat}}">
-        <text class="info-label">WeChat</text>
-        <text class="info-value mono">{{load.clientWechat}}</text>
-      </view>
-
-      <view class="action-row">
-        <button
-          class="action-btn primary"
-          bindtap="callClient"
-          disabled="{{!clientPhone}}"
-        >{{t.contract_call}}</button>
-        <button
-          class="action-btn"
-          bindtap="copyWechat"
-          disabled="{{!load.clientWechat}}"
-        >{{t.contract_wechat}}</button>
-      </view>
-
-      <view class="hint-small" wx:if="{{!clientPhone}}">{{t.contract_no_client_phone}}</view>
-      <view class="hint-small" wx:if="{{!load.clientWechat}}">{{t.contract_no_client_wechat}}</view>
-    </view>
-
-    <!-- Driver section -->
-    <view class="card">
-      <view class="section-h">🚚 {{t.contract_driver_section}}</view>
-      <block wx:if="{{driver}}">
-        <view class="info-row"><text class="info-label">{{t.d_reg_fullname}}</text><text class="info-value">{{driver.fullname}}</text></view>
-        <view class="info-row"><text class="info-label">{{t.d_reg_phone}}</text><text class="info-value mono">{{driver.phone}}</text></view>
-        <view class="info-row"><text class="info-label">{{t.d_reg_truck}}</text><text class="info-value">{{driver.truck}}</text></view>
-        <view class="info-row"><text class="info-label">{{t.d_reg_plate}}</text><text class="info-value mono">{{driver.plate}}</text></view>
-      </block>
-    </view>
-
-    <!-- Cargo / price -->
-    <view class="card" wx:if="{{load.note || load.price}}">
-      <view class="section-h">📦 {{t.contract_cargo_section}}</view>
-      <view class="info-row" wx:if="{{load.price}}">
-        <text class="info-label">{{t.contract_price}}</text>
-        <text class="info-value big">¥ {{load.price}}</text>
-      </view>
+      <view class="section-h">2. {{t.contract_section_subject}}</view>
+      <view class="info-row"><text class="info-label">{{t.contract_subject_route}}</text><text class="info-value">{{load.route || '—'}}</text></view>
+      <view class="info-row" wx:if="{{load.goodsType}}"><text class="info-label">{{t.contract_cargo_type}}</text><text class="info-value">{{load.goodsType}}</text></view>
+      <view class="info-row" wx:if="{{load.weight}}"><text class="info-label">{{t.contract_cargo_weight}}</text><text class="info-value">{{load.weight}} {{t.calc_kg}}</text></view>
+      <view class="info-row" wx:if="{{load.volume}}"><text class="info-label">{{t.contract_cargo_volume}}</text><text class="info-value">{{load.volume}} m³</text></view>
       <view class="note-block" wx:if="{{load.note}}">{{load.note}}</view>
     </view>
 
-    <!-- Status history -->
+    <!-- 3. Price -->
+    <view class="card" wx:if="{{load.price || load.priceDays}}">
+      <view class="section-h">3. {{t.contract_section_price}}</view>
+      <view class="info-row" wx:if="{{load.price}}"><text class="info-label">{{t.contract_price_amount}}</text><text class="info-value big">$ {{load.price}}</text></view>
+      <view class="info-row" wx:if="{{load.priceDays}}"><text class="info-label">{{t.contract_price_term}}</text><text class="info-value">{{load.priceDays}} {{t.contract_days}}</text></view>
+    </view>
+
+    <!-- 4. Obligations -->
     <view class="card">
-      <view class="section-h">📅 {{t.contract_status_section}}</view>
+      <view class="section-h">4. {{t.contract_section_obligations}}</view>
+      <view class="obligation">
+        <view class="party-role">{{t.contract_party_client}}</view>
+        <view class="obligation-text">{{t.contract_obl_client}}</view>
+      </view>
+      <view class="divider"></view>
+      <view class="obligation">
+        <view class="party-role">{{t.contract_party_driver}}</view>
+        <view class="obligation-text">{{t.contract_obl_driver}}</view>
+      </view>
+    </view>
+
+    <!-- 5. Liability -->
+    <view class="card">
+      <view class="section-h">5. {{t.contract_section_liability}}</view>
+      <view class="obligation-text">{{t.contract_liability_text}}</view>
+      <view class="obligation-text muted-small">{{t.contract_platform_note}}</view>
+    </view>
+
+    <!-- 6. Signatures -->
+    <view class="card">
+      <view class="section-h">6. {{t.contract_section_signatures}}</view>
+
+      <view class="sig-block">
+        <view class="party-role">{{t.contract_sig_client}}</view>
+        <block wx:if="{{clientAcceptedAt}}">
+          <view class="sig-signed">✓ {{t.contract_sig_accepted}} {{t.contract_sig_at}} {{clientAcceptedStr}}</view>
+        </block>
+        <block wx:else>
+          <view wx:if="{{isClient}}" class="sig-actions">
+            <button class="btn-primary" bindtap="acceptContract">{{t.contract_sig_accept}}</button>
+          </view>
+          <view wx:else class="sig-pending">⏳ {{t.contract_sig_not_yet}}</view>
+        </block>
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="sig-block">
+        <view class="party-role">{{t.contract_sig_driver}}</view>
+        <block wx:if="{{driverAcceptedAt}}">
+          <view class="sig-signed">✓ {{t.contract_sig_accepted}} {{t.contract_sig_at}} {{driverAcceptedStr}}</view>
+        </block>
+        <block wx:else>
+          <view wx:if="{{!isClient}}" class="sig-actions">
+            <button class="btn-primary" bindtap="acceptContract" disabled="{{!driver}}">{{t.contract_sig_accept}}</button>
+            <view class="hint-small" wx:if="{{!driver}}">{{t.contract_sig_need_profile}}</view>
+          </view>
+          <view wx:else class="sig-pending">⏳ {{t.contract_sig_not_yet}}</view>
+        </block>
+      </view>
+    </view>
+
+    <!-- Driver quick contact (only when both signed and driver-view) -->
+    <view class="card" wx:if="{{!isClient && clientAcceptedAt && driverAcceptedAt}}">
+      <view class="section-h">{{t.contract_actions}}</view>
+      <view class="action-row">
+        <button class="action-btn primary" bindtap="callClient" disabled="{{!clientPhone}}">{{t.contract_call}}</button>
+        <button class="action-btn" bindtap="copyWechat" disabled="{{!load.clientWechat}}">{{t.contract_wechat}}</button>
+      </view>
+    </view>
+
+    <!-- 7. Status timeline -->
+    <view class="card">
+      <view class="section-h">7. {{t.contract_section_timeline}}</view>
       <view class="timeline">
         <view class="tl-item" wx:for="{{historyLabeled}}" wx:key="at">
           <view class="tl-dot {{index === 0 ? 'active' : ''}}"></view>
@@ -86,9 +130,9 @@
       </view>
     </view>
 
-    <!-- Next status actions -->
+    <!-- Next status actions (driver only, after driver signed) -->
     <view class="card" wx:if="{{nextStatuses.length > 0}}">
-      <view class="section-h">⚡️ {{t.contract_next_status}}</view>
+      <view class="section-h">{{t.contract_next_status}}</view>
       <view class="next-actions">
         <button
           wx:for="{{nextStatuses}}"
@@ -100,6 +144,11 @@
         >{{ns.emoji}} {{ns.label}}</button>
       </view>
     </view>
+
+    <view wx:elif="{{!isClient && !canAdvance}}" class="hint-small pad">
+      {{t.contract_status_locked}}
+    </view>
+
   </block>
 
 </view>

@@ -23,10 +23,6 @@
             <text>{{t.calc_border}}</text>
             <text>{{price.currency}} {{price.borderFee}}</text>
           </view>
-          <view class="price-row muted" wx:if="{{price.expressExtra > 0}}">
-            <text>{{t.calc_extra}}</text>
-            <text>+{{price.currency}} {{price.expressExtra}}</text>
-          </view>
         </view>
         <view class="price-disclaimer">{{t.calc_disclaimer}}</view>
       </block>
@@ -41,13 +37,6 @@
     <view class="card">
       <view class="title">{{t.order_title}}</view>
       <view class="subtitle">{{t.order_subtitle}}</view>
-
-      <view class="form-item">
-        <view class="label">{{t.order_client_type}}</view>
-        <view class="method-tabs">
-          <view class="method-tab {{form.clientType === item.value ? 'active' : ''}}" wx:for="{{clientTypes}}" wx:key="value" bindtap="selectClientType" data-value="{{item.value}}">{{item.label}}</view>
-        </view>
-      </view>
 
       <view class="form-item">
         <view class="label">{{t.order_from}}</view>
@@ -77,15 +66,6 @@
         <view class="form-item flex-1">
           <view class="label">{{t.order_volume}}</view>
           <input class="form-input" type="digit" placeholder="0" value="{{form.volume}}" bindinput="onInput" data-field="volume" />
-        </view>
-      </view>
-
-      <view class="form-item">
-        <view class="checkbox-row" bindtap="toggleExpress">
-          <view class="checkbox {{form.express ? 'checked' : ''}}">
-            <text wx:if="{{form.express}}">✓</text>
-          </view>
-          <text class="checkbox-label">{{t.calc_express}}</text>
         </view>
       </view>
 
@@ -140,15 +120,15 @@
         </view>
         <view class="load-route" bindtap="openContract" data-id="{{item.id}}">🛣 {{item.route}}</view>
         <view class="load-meta" wx:if="{{item.client}}">👤 {{item.client}}</view>
-        <view class="load-meta" wx:if="{{item.price}}">💰 ¥ {{item.price}}</view>
+        <view class="load-meta" wx:if="{{item.price}}">💰 $ {{item.price}}</view>
         <view class="load-meta muted" wx:if="{{item.note}}">📝 {{item.note}}</view>
 
         <view class="load-actions">
           <button class="status-btn ghost" bindtap="openContract" data-id="{{item.id}}">📄 {{t.my_loads_open}}</button>
         </view>
 
-        <view class="load-footer">
-          <text class="load-delete" bindtap="deleteLoad" data-id="{{item.id}}">🗑 {{t.my_loads_delete}}</text>
+        <view class="load-footer" wx:if="{{item.status === 'taken'}}">
+          <text class="load-delete" bindtap="releaseLoad" data-id="{{item.id}}">✋ {{t.my_loads_release}}</text>
         </view>
       </view>
     </block>

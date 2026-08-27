@@ -1,6 +1,5 @@
 const app = getApp()
 const i18n = require('../../utils/i18n.js')
-const api = require('../../utils/api.js')
 
 Page({
   data: {
@@ -46,36 +45,18 @@ Page({
       return
     }
 
-    this.setData({ loading: true })
-
     const profile = Object.assign({}, this.data.form, {
       status: 'pending',
       registeredAt: Date.now()
     })
+    app.setDriverProfile(profile)
 
-    api.sendDriverRegistration(profile)
-      .then(() => {
-        app.setDriverProfile(profile)
-        this.setData({ loading: false })
-        wx.showModal({
-          title: t.d_reg_success_title,
-          content: t.d_reg_success_msg,
-          showCancel: false,
-          confirmText: t.d_reg_ok,
-          success: () => wx.switchTab({ url: '/pages/index/index' })
-        })
-      })
-      .catch(err => {
-        this.setData({ loading: false })
-        // Даже если Telegram не отправился — сохраняем локально, чтобы UI работал
-        app.setDriverProfile(profile)
-        wx.showModal({
-          title: '⚠️',
-          content: 'Данные сохранены локально, но не отправлены админу: ' + ((err && err.message) || 'ошибка сети'),
-          showCancel: false,
-          confirmText: t.d_reg_ok,
-          success: () => wx.switchTab({ url: '/pages/index/index' })
-        })
-      })
+    wx.showModal({
+      title: t.d_reg_success_title,
+      content: t.d_reg_success_msg,
+      showCancel: false,
+      confirmText: t.d_reg_ok,
+      success: () => wx.switchTab({ url: '/pages/index/index' })
+    })
   }
 })

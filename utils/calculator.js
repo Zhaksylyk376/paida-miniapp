@@ -11,9 +11,9 @@ function getCountriesList(lang) {
   })
 }
 
-// Возвращает { chargeableKg, base, borderFee, express, total, breakdown[] }
-// Если данных не хватает — вернёт null
-function calcPrice({ countryCode, weightKg, volumeM3, express }) {
+// Возвращает { chargeableKg, base, borderFee, total, currency, days, pricePerKg }
+// Всё в USD. Если данных не хватает — null
+function calcPrice({ countryCode, weightKg, volumeM3 }) {
   const tariff = config.TARIFFS[countryCode]
   if (!tariff) return null
 
@@ -24,16 +24,15 @@ function calcPrice({ countryCode, weightKg, volumeM3, express }) {
   const chargeableKg = Math.max(w, v * config.VOLUME_TO_KG, tariff.minKg)
   const base = chargeableKg * tariff.pricePerKg
   const borderFee = config.BORDER_FEE
-  let total = base + borderFee
-  const expressExtra = express ? Math.round(total * (config.EXPRESS_MULTIPLIER - 1)) : 0
-  total = total + expressExtra
+  const total = base + borderFee
+
+  const round2 = (n) => Math.round(n * 100) / 100
 
   return {
     chargeableKg: Math.round(chargeableKg),
-    base: Math.round(base),
-    borderFee,
-    expressExtra,
-    total: Math.round(total),
+    base: round2(base),
+    borderFee: round2(borderFee),
+    total: round2(total),
     currency: config.CURRENCY,
     days: tariff.days,
     pricePerKg: tariff.pricePerKg
@@ -42,8 +41,8 @@ function calcPrice({ countryCode, weightKg, volumeM3, express }) {
 
 function formatMoney(amount, currency) {
   const cur = currency || config.CURRENCY
-  // 12500 → "12,500"
-  const withCommas = String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  const n = Number(amount)
+  const withCommas = n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return `${cur} ${withCommas}`
 }
 

@@ -7,7 +7,6 @@ Page({
     role: 'client',
     profile: null,
     stats: { active: 0, done: 0 },
-    clients: [],
     advantages: [],
     howSteps: []
   },
@@ -30,10 +29,6 @@ Page({
         { id: 3, num: '3', title: t.how_3_title, desc: t.how_3_desc },
         { id: 4, num: '4', title: t.how_4_title, desc: t.how_4_desc }
       ],
-      clients: [
-        { id: 1, icon: '👤', name: t.client_private, desc: t.client_private_desc },
-        { id: 2, icon: '🏭', name: t.client_business, desc: t.client_business_desc }
-      ],
       advantages: [
         { id: 1, num: '1', title: t.adv1_title, desc: t.adv1_desc },
         { id: 2, num: '2', title: t.adv2_title, desc: t.adv2_desc },
@@ -46,7 +41,7 @@ Page({
   },
 
   _calcStats() {
-    const loads = app.getDriverLoads()
+    const loads = app.getMyDriverOrders()
     return {
       active: loads.filter(l => l.status !== 'delivered').length,
       done: loads.filter(l => l.status === 'delivered').length
@@ -55,7 +50,7 @@ Page({
 
   goToOrder() { wx.switchTab({ url: '/pages/order/order' }) },
   goToProcess() { wx.switchTab({ url: '/pages/tracking/tracking' }) },
-  goToAddLoad() { wx.switchTab({ url: '/pages/tracking/tracking' }) },
+  goToAvailable() { wx.switchTab({ url: '/pages/tracking/tracking' }) },
   goToMyLoads() { wx.switchTab({ url: '/pages/order/order' }) },
   goToRegister() { wx.navigateTo({ url: '/pages/driver-register/driver-register' }) }
 })

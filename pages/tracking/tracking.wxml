@@ -26,44 +26,33 @@
     <view class="process-note">{{t.process_note}}</view>
   </block>
 
-  <!-- ============ DRIVER: ADD LOAD ============ -->
+  <!-- ============ DRIVER: AVAILABLE ORDERS ============ -->
   <block wx:else>
     <view class="card">
-      <view class="title">{{t.add_load_title}}</view>
-      <view class="subtitle">{{t.add_load_subtitle}}</view>
-
-      <view class="form-item">
-        <view class="label">{{t.add_load_number}}</view>
-        <input class="form-input" placeholder="{{t.add_load_number_ph}}" value="{{load.number}}" bindinput="onLoadInput" data-field="number" />
-      </view>
-
-      <view class="form-item">
-        <view class="label">{{t.add_load_route}}</view>
-        <input class="form-input" placeholder="{{t.add_load_route_ph}}" value="{{load.route}}" bindinput="onLoadInput" data-field="route" />
-      </view>
-
-      <view class="form-item">
-        <view class="label">{{t.add_load_client}}</view>
-        <input class="form-input" placeholder="{{t.add_load_client_ph}}" value="{{load.client}}" bindinput="onLoadInput" data-field="client" />
-      </view>
-
-      <view class="form-item">
-        <view class="label">{{t.add_load_client_wechat}}</view>
-        <input class="form-input" placeholder="{{t.add_load_client_wechat_ph}}" value="{{load.clientWechat}}" bindinput="onLoadInput" data-field="clientWechat" />
-      </view>
-
-      <view class="form-item">
-        <view class="label">{{t.add_load_price}}</view>
-        <input class="form-input" type="number" placeholder="0" value="{{load.price}}" bindinput="onLoadInput" data-field="price" />
-      </view>
-
-      <view class="form-item">
-        <view class="label">{{t.add_load_note}}</view>
-        <textarea class="form-textarea" placeholder="{{t.add_load_note_ph}}" value="{{load.note}}" bindinput="onLoadInput" data-field="note" />
-      </view>
-
-      <button class="btn-primary" bindtap="addLoad">{{t.add_load_submit}}</button>
+      <view class="title">{{t.available_title}}</view>
+      <view class="subtitle">{{t.available_subtitle}}</view>
     </view>
+
+    <block wx:if="{{availableOrders.length === 0}}">
+      <view class="card empty">
+        <view class="empty-icon">📭</view>
+        <view class="empty-text">{{t.available_empty}}</view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="load-card" wx:for="{{availableOrders}}" wx:key="id">
+        <view class="load-header">
+          <view class="load-number">{{item.number}}</view>
+          <view class="load-price" wx:if="{{item.price}}">$ {{item.price}}</view>
+        </view>
+        <view class="load-route">🛣 {{item.route || '—'}}</view>
+        <view class="load-meta" wx:if="{{item.cargo}}">📦 {{item.cargo}}</view>
+        <view class="load-meta muted">🕒 {{item.createdStr}}</view>
+
+        <button class="btn-primary take-btn" bindtap="takeOrder" data-id="{{item.id}}">✋ {{t.available_take}}</button>
+      </view>
+    </block>
   </block>
 
 </view>
