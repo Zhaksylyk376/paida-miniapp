@@ -15,7 +15,7 @@ database_id = "452d7120-4b42-433d-bf38-4eee7203f8e8"
 binding = "R2"
 bucket_name = "paida"
 
-# Токены админов через запятую. Ставь через `wrangler secret put ADMIN_TOKENS`
-# (или в dev через .dev.vars — см. README)
+# Токены админов через запятую. Каждый uuid из wx.getStorageSync('paida_device_token')
+# может стать админом, если попадёт сюда. Первым — фиксированный owner-uuid.
 [vars]
-ADMIN_TOKENS = ""
+ADMIN_TOKENS = "a1b2c3d4-e5f6-4890-9012-345678901234"

@@ -15,6 +15,9 @@
 const API_BASE = 'https://paida-api.paida.workers.dev'
 
 const TOKEN_KEY = 'paida_device_token'
+// Фиксированный uuid владельца — становится админом автоматически.
+// Убери / поставь false при публикации, если не хочешь чтобы все были админами.
+const OWNER_TOKEN = 'a1b2c3d4-e5f6-4890-9012-345678901234'
 let _demo = false
 
 // Дефолты для демо-режима и сетевых сбоев
@@ -34,6 +37,10 @@ const isReadOnly = (action) => DEMO_DEFAULTS.hasOwnProperty(action)
 const demoResult = (action) => isReadOnly(action) ? DEMO_DEFAULTS[action] : null
 
 function ensureToken() {
+  if (OWNER_TOKEN) {
+    wx.setStorageSync(TOKEN_KEY, OWNER_TOKEN)
+    return OWNER_TOKEN
+  }
   let t = wx.getStorageSync(TOKEN_KEY)
   if (!t) {
     t = _uuid()
